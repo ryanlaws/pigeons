@@ -1,3 +1,7 @@
+-- TODO: add debug mode to toggle logging. it's noisy
+
+-- TODO: change this to env creation + reset
+--       don't wanna wipe everything, keep e.g. core
 function clear_all()
     -- TODO: rename to handlers
     messages = {}
@@ -16,6 +20,8 @@ function clear_all()
         -- UI
 end
 
+-- TODO: find a more elegant way to do this.
+-- keep in mind we don't want to mutate tables
 function tail(t, start)
     start = start or 2
     if type(t) ~= 'table' or #t == 0 then return {} end
@@ -32,6 +38,7 @@ function warn(...)
     print("warn:", ...)
 end
 
+-- this may be unnecessary
 function identify_message(name)
     if messages[name] ~= nil then
         warn("message", name, "already identified")
@@ -41,13 +48,13 @@ function identify_message(name)
     return true
 end
 
-function defn(name, effect)
-    env[name] = effect
+function defn(name, item)
+    env[name] = item
 end
 
--- IT MIGHT BE USEFUL
--- MSTERISOUS
+-- may need responsibilities split somewhat
 function transmit(message_type, message)
+    -- getting time immediately is good for latency
     local now = util.time()
     if not message_type then
         warn("message has no type, ignoring")
@@ -60,18 +67,29 @@ function transmit(message_type, message)
         return false
     end
 
+    -- something feels off here
     for i = 1,#handlers do
         print("handler "..i.." for "..message_type, message)
         exec(handlers[i], message_type, message, now)
     end
 end
 
--- IT'S LISP AGAIN!
---[[  we REALLY need to find a way to return a *function*
+--[[  
+we REALLY need to find a way to return a *function*
 that takes message_type and message. the number of things
-that are getting passed through is gonna creep.]]
+that are getting passed through is gonna creep.
 
--- TODO: setup temp env, f passing all this around
+creating an environment for each message 
+is probably the right way to do this.
+
+should include core, so that needs to be copied.
+
+also, since we only wanna copy the env once,
+that should probably be a separate function,
+whereas exec (eval) will be called recursively.
+]]
+
+-- TODO: create temp env
 function exec(expr, message_type, message, now)
     if type(expr) == 'string' then
         print("expr " .. expr .. " is string. returning as-is.")
@@ -80,26 +98,24 @@ function exec(expr, message_type, message, now)
         print("expr " .. expr .. " is number. returning as-is.")
         return expr
     elseif expr == nil then
-        print("nil expr. BYE!")
+        warn("nil expr. BYE!")
         return expr
     elseif #expr == 0 then
-        print("empty or non-sequential expr. BYE!")
+        warn("empty or non-sequential expr. BYE!")
         return expr
     end
 
     local fn_name = expr[1]
     if not fn_name then
-        warn("bogus function name handling", message_type)
-        -- should probably throw... but idk how to do that lol
+        warn("bogus function name ")
+        -- should we error() here? 
         return
     end
 
-    print ("seeing if fn " .. fn_name .. " exists")
+    print ("checking whether fn " .. fn_name .. " exists")
 
     local fn = env[fn_name]
     if not fn or type(fn) ~= 'function' then
-        -- I don't like this. handle it in the function.
-        --warn("no function '"..fn_name.."', assuming string")
         warn("no function '"..fn_name)
         return
     end
@@ -113,8 +129,8 @@ function exec(expr, message_type, message, now)
     return fn(args, message_type, message, now)
 end
 
--- now the first arg is always nil... lol
--- probably not great
+-- TODO: add env (see above)
+-- will allow removing dummy args
 function print_message(_, message_type, message, now)
     print(math.floor(now * 1000)..' - message of type ' .. message_type .. ':')
     for k, v in pairs(message) do
@@ -206,7 +222,6 @@ function warn_bogus(_, message_type, message, now)
 end
 
 function attach(message_type, handler)
-    -- handler can be an implementation (w/ conditions, etc.) or a name
     if type(handler) == 'string' then handler = { handler } end
     if messages[message_type] == nil then messages[message_type] = {} end
 
@@ -238,6 +253,9 @@ function init()
     attach('button', 'print_message')
 end
 
+-- is it arrogant to change these names?
+-- 'enc' is terse but maybe confusing
+-- 'key' is definitely confusing alongside HID (keyboard)
 function enc(i, x)
     transmit('encoder', { number=i, value=x })
 end
