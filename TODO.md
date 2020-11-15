@@ -2,9 +2,10 @@
 - [ ] Add debug mode
 - [ ] Split into modules
     - [ ] lib
-        - [ ] Interpreter
-        - [ ] Utils
-        - [ ] Core
+        - [x] Messages
+        - [x] Lisp
+        - [x] Utils
+        - [x] Core
         - [ ] Extensions (e.g. I/O)
     - [ ] UI
 - [ ] Implement MIDI I/O
