@@ -1,9 +1,17 @@
 - [ ] Create environment/context for each event
 - [ ] Add debug mode
+- [ ] Split into modules
+    - [ ] lib
+        - [ ] Interpreter
+        - [ ] Utils
+        - [ ] Core
+        - [ ] Extensions (e.g. I/O)
+    - [ ] UI
 - [ ] Implement MIDI I/O
-- [ ] Implement norns screen log (text-only for now)
-    - [ ] Log incoming messages
-    - [ ] Log handlers
-- [ ] Implement visual (keyboard-free) expression editor
-- [ ] Implement message "learn" (like MIDI learn)
+- [ ] Implement UI
+    - [ ] Norns screen log (text-only for now)
+        - [ ] Log incoming messages
+        - [ ] Log handlers
+    - [ ] Visual (keyboard-free) expression editor
+    - [ ] Message "learn" (like MIDI learn)
 
