@@ -32,6 +32,8 @@ message.transmit = function (message_type, message)
     end
 end
 
+-- TODO: implement in lisp so we can utilize environment
+--       this will be useful when e.g. switching modes (and envs)
 message.attach = function (message_type, handler)
     if type(handler) == 'string' then handler = { handler } end
     if listeners[message_type] == nil then listeners[message_type] = {} end
@@ -42,6 +44,7 @@ message.attach = function (message_type, handler)
 end
 
 -- this may be unnecessary
+-- it is useful for discoverability though
 message.identify = function (name)
     if listeners[name] ~= nil then
         utils.warn("message", name, "already identified")

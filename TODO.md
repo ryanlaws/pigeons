@@ -1,4 +1,6 @@
 - [ ] Implement MIDI I/O
+    - [x] MIDI inputs -> messages
+    - [ ] MIDI output handlers
 - [ ] Implement UI
     - [ ] Norns screen log (text-only for now)
         - [ ] Log incoming messages

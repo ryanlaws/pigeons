@@ -14,8 +14,12 @@ core.print_expr = function (args, env)
     -- print("printing result of expression "..utils.table_to_string(printable))
     -- assume we only care about first arg of expression
     local result = lisp.exec(printable, env)
-    print(result)
+    print(utils.table_to_string(result))
     -- print((util.time() % 1000).." - "..result)
+end
+
+core.print_table = function (args, env)
+    print(utils.table_to_string(args[1]))
 end
 
 core.eq = function (args, env)
@@ -97,15 +101,25 @@ core.defglobal = function(args, env)
     end
 end
 
+core['do'] = function(args, env)
+    local result
+    for i=1,#args do
+        result = lisp.exec(args[i], env)
+    end
+    return result
+end
 -- stinky
 -- could probably just iterate over all these keys
+-- TODO: use kebab case :)
 lisp.defglobal('print_message', core.print_message)
 lisp.defglobal('print_expr', core.print_expr)
+lisp.defglobal('print_table', core.print_table)
 lisp.defglobal('smush', core.smush)
 lisp.defglobal('if', core.cond)
 lisp.defglobal('=', core.eq)
 lisp.defglobal('message_prop', core.message_prop)
 lisp.defglobal('def', core.def)
 lisp.defglobal('defglobal', core.defglobal)
+lisp.defglobal('do', core['do'])
 
 return core

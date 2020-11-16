@@ -3,12 +3,14 @@ local lisp = {}
 
 -- TODO: find a more elegant way to do this.
 -- keep in mind we don't want to mutate tables
+-- (is that really true? I'm mutating them now lol)
 -- something something metatables
 lisp.defglobal = function (name, item)
     -- print((util.time() % 1000) .. " adding "..name.." to global env")
     global_env[name] = item
 end
 
+-- copying envs could be useful
 lisp.make_env = function (new_env)
     if new_env == nil then
         -- print("new env is empty, making a fresh table")
@@ -39,6 +41,7 @@ lisp.make_env = function (new_env)
     return env
 end
 
+-- should creating an environment give us an exec() as well?
 lisp.exec = function (expr, env) 
     if type(expr) == 'string' then
         -- print("expr " .. expr .. " is string. returning as-is.")
