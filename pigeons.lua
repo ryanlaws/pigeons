@@ -1,7 +1,10 @@
-local utils = include('lib/utils')
-local core = include('lib/core')
-local message = include('lib/message')
-local lisp = include('lib/lisp')
+-- globals are kinda gross.
+-- but probably fine.
+-- if not, there's always DI. heh.
+utils = include('lib/utils')
+lisp = include('lib/lisp')
+core = include('lib/core')
+message = include('lib/message')
 
 -- TODO: add debug mode to toggle logging. it's noisy
 
@@ -28,24 +31,20 @@ end
 function init()
     clear_all()
 
-    lisp.defn('print_message', core.print_message)
-    lisp.defn('print_expr', core.print_expr)
-    lisp.defn('smush', core.smush)
-    lisp.defn('if', core.cond)
-    lisp.defn('=', core.eq)
-    lisp.defn('message_prop', core.message_prop)
-
     message.identify('encoder')
     message.identify('button')
 
-    message.attach('encoder', 'print_message')
+    -- message.attach('button', 'print_message')
+    -- message.attach('encoder', 'print_message')
+    lisp.defglobal('last-num', '(nil)')
+    message.attach('encoder', {'print_expr', {'smush', "last number: ", {'last-num'}}})
+    message.attach('encoder', {'defglobal', 'last-num', {'message_prop', 'value'}})
     message.attach('encoder',
-        { 'if',
-            { '=', 3,  { 'message_prop', 'number' } },
-            { 'print_expr', 'we got a THREE!'},
-            { 'print_expr',
-                { 'smush', "what's '", { 'message_prop', 'number' }, "' ?" }}})
-    message.attach('button', 'print_message')
+        {'if',
+            {'=', 3, {'message_prop', 'number' }},
+            {'print_expr', 'we got a THREE!'},
+            {'print_expr',
+                {'smush', "what's '", {'message_prop', 'number'}, "' ?" }}})
 end
 
 -- is it arrogant to change these names?

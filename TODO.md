@@ -1,13 +1,3 @@
-- [ ] Create environment/context for each event
-- [ ] Add debug mode
-- [ ] Split into modules
-    - [ ] lib
-        - [x] Messages
-        - [x] Lisp
-        - [x] Utils
-        - [x] Core
-        - [ ] Extensions (e.g. I/O)
-    - [ ] UI
 - [ ] Implement MIDI I/O
 - [ ] Implement UI
     - [ ] Norns screen log (text-only for now)
@@ -15,4 +5,12 @@
         - [ ] Log handlers
     - [ ] Visual (keyboard-free) expression editor
     - [ ] Message "learn" (like MIDI learn)
+- [ ] Add debug mode
+- [x] Create environment/context for each event
+- [x] Split into modules
+    - [x] lib (core)
+        - [x] Messages
+        - [x] Lisp
+        - [x] Utils
+        - [x] Core
 

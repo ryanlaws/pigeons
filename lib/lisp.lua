@@ -1,36 +1,50 @@
-local utils = include('lib/utils')
-
+local global_env = {}
 local lisp = {}
 
 -- TODO: find a more elegant way to do this.
 -- keep in mind we don't want to mutate tables
-
-lisp.defn = function (name, item)
-    env[name] = item
+-- something something metatables
+lisp.defglobal = function (name, item)
+    -- print((util.time() % 1000) .. " adding "..name.." to global env")
+    global_env[name] = item
 end
 
---[[  
-we REALLY need to find a way to return a *function*
-that takes message_type and message. the number of things
-that are getting passed through is gonna creep.
+lisp.make_env = function (new_env)
+    if new_env == nil then
+        -- print("new env is empty, making a fresh table")
+        new_env = {}
+    elseif type(new_env) ~= 'table' then 
+        error("bad env (type "..type(env).." - should be table)") 
+        return nil -- reachable?
+    else
+        -- print("new env looks good to me:"..utils.table_to_string(new_env))
+    end
+    -- print("old env:"..utils.table_to_string(global_env))
 
-creating an environment for each message 
-is probably the right way to do this.
+    -- dummy vars everywhere. 
+    -- probably not the right way to use metatables.
+    local env = setmetatable({}, {
+        __index = function(_, k)
+            -- print("looking in env for "..k)
+            return (new_env[k] ~= nil and new_env[k]) or global_env[k]
+        end,
+        __newindex = function(_, k, v)
+            -- print("trying to set "..k.." in env")
+            new_env[k] = v
+        end
+    })
 
-should include core, so that needs to be copied.
+    -- print("here's your new table:"..utils.table_to_string(env))
 
-also, since we only wanna copy the env once,
-that should probably be a separate function,
-whereas exec (eval) will be called recursively.
-]]
+    return env
+end
 
--- TODO: create temp env
-lisp.exec = function (expr, message_type, msg, now)
+lisp.exec = function (expr, env) 
     if type(expr) == 'string' then
-        print("expr " .. expr .. " is string. returning as-is.")
+        -- print("expr " .. expr .. " is string. returning as-is.")
         return expr
     elseif type(expr) == 'number' then
-        print("expr " .. expr .. " is number. returning as-is.")
+        -- print("expr " .. expr .. " is number. returning as-is.")
         return expr
     elseif expr == nil then
         utils.warn("nil expr. BYE!")
@@ -40,28 +54,35 @@ lisp.exec = function (expr, message_type, msg, now)
         return expr
     end
 
-    local fn_name = expr[1]
-    if not fn_name then
-        utils.warn("bogus function name ")
+    local head = expr[1]
+    if not head then
+        utils.warn("bogus head")
         -- should we error() here? 
         return
     end
 
-    print ("checking whether fn " .. fn_name .. " exists")
-
-    local fn = env[fn_name]
-    if not fn or type(fn) ~= 'function' then
-        utils.warn("no function '"..fn_name)
-        return
+    -- print("checking whether env has " .. head)
+    local item = env[head]
+    if not item then
+        error("env does not have '"..head.."'")
+        return nil -- uhhh, what else?
+    elseif type(item) ~= 'function' then -- assuming string/number. what else...?
+        -- print("env '"..head.."' is not a function - returning as-is")
+        --return lisp.exec(item, env) -- lol. no. this is why you have separate def and defn
+        -- for functions I think it's the same... but lazy.
+        return item
     end
 
     local args = utils.tail(expr)
-    print("expression: "..utils.table_to_string(expr))
-    print("args: "..utils.table_to_string(args))
-    print("message: "..utils.table_to_string(msg))
-    print("executing fn "..fn_name.." on env")
+    -- print("expression: "..utils.table_to_string(expr))
+    -- print("args: "..utils.table_to_string(args))
+    -- print("executing fn "..head.." on env")
 
-    return fn(args, message_type, msg, now)
+    return item(args, env)
+    -- message_type, msg, now)
+end
+
+lisp.eval = function ()
 end
 
 return lisp

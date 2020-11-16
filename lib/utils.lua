@@ -22,8 +22,8 @@ utils.table_to_string = function (table, depth)
         return table
     elseif table == nil then
         return "(nil)"
-    elseif type(table) ~= 'table' then
-        return '' + table
+    elseif type(table) == 'string' then
+        return "("..type(table)..")"
     end
 
     local str = '{\n'
@@ -43,6 +43,4 @@ utils.table_to_string = function (table, depth)
     return str..indent..'}'
 end
 
-
 return utils
-

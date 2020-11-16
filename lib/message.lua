@@ -1,6 +1,3 @@
-local utils = include('lib/utils')
-local lisp = include('lib/lisp')
-
 local message = {}
 
 -- may need responsibilities split somewhat
@@ -18,10 +15,20 @@ message.transmit = function (message_type, message)
         return false
     end
 
+    local env = lisp.make_env({
+        message_type=message_type, 
+        message=message, 
+        now=now
+    })
+
     -- something feels off here
     for i = 1,#handlers do
-        print("handler "..i.." for "..message_type, message)
-        lisp.exec(handlers[i], message_type, message, now)
+        -- print((util.time() % 1000) .. " - start handler "..i.." for "..message_type) 
+        -- print("message:"..utils.table_to_string(message))
+        -- print("handler:"..utils.table_to_string(handlers[i]))
+        -- lisp.exec(handlers[i], message_type, message, now)
+        local derp = lisp.exec(handlers[i], env)
+        -- print((util.time() % 1000) .. " - finish handler "..i.." for "..message_type) 
     end
 end
 
