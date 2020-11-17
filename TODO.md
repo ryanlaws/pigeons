@@ -1,7 +1,6 @@
 # TODO
-- [ ] Implement MIDI I/O
-    - [x] MIDI inputs -> messages
-    - [ ] MIDI output handlers
+- [ ] Implement MIDI output handlers
+- [ ] Flatten message structure (nesting is yucky)
 - [ ] Implement UI
     - [ ] Menus
     - [ ] Visual (keyboard-free) expression editor
@@ -12,8 +11,12 @@
     - [ ] Messages and lisp MAY be useful separately (?)
 - [ ] Implement message throttling
 - [ ] Refactor everything to use Lisp as much as possible
+- [ ] Real Lisp
+    - [ ] Persist expressions as strings
+    - [ ] Parse strings into expressions 
 
 # DONE
+- [x] Implement MIDI inputs -> messages
 - [x] Norns screen log (text-only for now)
     - [x] Log incoming messages
     - [x] Log handlers - NAH, not now, I don't think this will work
