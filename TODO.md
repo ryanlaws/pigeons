@@ -3,6 +3,7 @@
 - [ ] Flatten message structure (nesting is yucky)
 - [ ] Implement UI
     - [ ] Menus
+        - [x] Menu state (button press)
     - [ ] Visual (keyboard-free) expression editor
     - [ ] Message "learn" (like MIDI learn)
 - [ ] Add debug mode
@@ -10,6 +11,8 @@
     - [ ] Do not reference other modules via globals
     - [ ] Messages and lisp MAY be useful separately (?)
 - [ ] Implement message throttling
+    - [ ] Timers/clocks
+    - [ ] Execution context (like closure env) - may need IDs, etc.
 - [ ] Refactor everything to use Lisp as much as possible
 - [ ] Real Lisp
     - [ ] Persist expressions as strings

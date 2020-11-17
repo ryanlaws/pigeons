@@ -23,15 +23,31 @@ core.print_table = function (args, env)
 end
 
 core.eq = function (args, env)
-    -- print("checking equality")
-    -- local first = lisp.exec(args[1], env)
-    -- local second = lisp.exec(args[2], env)
-    -- print("first value = "..utils.table_to_string(first))
-    -- print("second value = "..utils.table_to_string(second))
-    -- local equals = first == second
-    -- print("equality test "..(equals and "passed" or "failed"))
-    -- return equals
     return lisp.exec(args[1], env) == lisp.exec(args[2], env)
+end
+
+core['not'] = function (args, env)
+    return not lisp.exec(args[1], env)
+end
+
+core['and'] = function (args, env)
+    local result = true
+    for i=1,#args do
+        if not lisp.exec(args[i], env) then
+            return false
+        end
+    end
+    return result
+end
+
+core['or'] = function (args, env)
+    local result = false
+    for i=1,#args do
+        if lisp.exec(args[i], env) then
+            return true
+        end
+    end
+    return result
 end
 
 core.cond = function (args, env)
@@ -51,6 +67,9 @@ core.smush = function (args, env)
         -- print("smushing expr: "..utils.table_to_string(args[i]).."")
         local val = lisp.exec(args[i], env)
         -- print("smushing value: "..utils.table_to_string(val).."")
+        if type(val) == 'boolean' then
+            val = val and '(true)' or '(false)'
+        end
         str = str..(val or "(nil)")
     end
     return str
@@ -110,14 +129,15 @@ core['do'] = function(args, env)
 end
 -- stinky
 -- could probably just iterate over all these keys
--- TODO: use kebab case :)
-lisp.defglobal('print_message', core.print_message)
-lisp.defglobal('print_expr', core.print_expr)
-lisp.defglobal('print_table', core.print_table)
+lisp.defglobal('print-message', core.print_message)
+lisp.defglobal('print-expr', core.print_expr)
+lisp.defglobal('print-table', core.print_table)
 lisp.defglobal('smush', core.smush)
 lisp.defglobal('if', core.cond)
 lisp.defglobal('=', core.eq)
-lisp.defglobal('message_prop', core.message_prop)
+lisp.defglobal('and', core['and'])
+lisp.defglobal('not', core['not'])
+lisp.defglobal('message-prop', core.message_prop)
 lisp.defglobal('def', core.def)
 lisp.defglobal('defglobal', core.defglobal)
 lisp.defglobal('do', core['do'])

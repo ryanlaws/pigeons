@@ -71,25 +71,34 @@ function setup_messages()
     message.identify('btn')
     message.identify('midi')
 
-    -- message.attach('btn', 'print_message')
-    -- message.attach('enc', 'print_message')
+    lisp.defglobal('menu-open', false)
+    -- menus make clear the need to switch envs
+    message.attach('btn', {'if', {'and',
+                {'=', 1, {'message-prop', 'number' }},
+                {'=', 1, {'message-prop', 'value' }}},
+            {'do', 
+                {'defglobal', 'menu-open', {'not', {'menu-open'}}},
+                {'print-expr', {'smush', 'menu open: ', {'menu-open'}}}
+            }})
+    -- message.attach('btn', 'print-message')
+    -- message.attach('enc', 'print-message')
 
-    lisp.defglobal('last-num', '(nil)')
-    message.attach('enc', { 'do', 
-            {'print_expr', {'smush', "last number: ", {'last-num'}}},
-            {'defglobal', 'last-num', {'message_prop', 'value'}}})
+    -- lisp.defglobal('last-num', '(nil)')
+    -- message.attach('enc', { 'do', 
+    --         {'print-expr', {'smush', "last number: ", {'last-num'}}},
+    --         {'defglobal', 'last-num', {'message-prop', 'value'}}})
 
     -- message.attach('enc',
     --     {'if',
-    --         {'=', 3, {'message_prop', 'number' }},
-    --         {'print_expr', 'we got a THREE!'},
-    --         {'print_expr',
-    --             {'smush', "what's '", {'message_prop', 'number'}, "' ?" }}})
+    --         {'=', 3, {'message-prop', 'number' }},
+    --         {'print-expr', 'we got a THREE!'},
+    --         {'print-expr',
+    --             {'smush', "what's '", {'message-prop', 'number'}, "' ?" }}})
     
     -- all this MIDI stuff can proooobably get moved to the lib.
 
     -- this doesn't actually do anything... unless you plug/unplug stuff
-    message.attach('midi-add-device', {'print_expr', {'message'}})
+    message.attach('midi-add-device', {'print-expr', {'message'}})
 end
 
 -- can enc/key be defined in a lib? I don't see why not...

@@ -43,6 +43,8 @@ ui.draw = function ()
     if #message.logs == 0 then
         screen.move(0, font_size)
         screen.text("Hello,")
+        screen.stroke()
+        screen.update()
         return
     end
 
@@ -55,7 +57,7 @@ ui.draw = function ()
         -- screen.text(spinner[spinner_index])
 
         screen.level(15)
-        screen.move(8, font_size * i - 1)
+        screen.move(9, font_size * i - 1)
         screen.text(ui.message_to_string(msg))
     end
 

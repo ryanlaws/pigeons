@@ -66,7 +66,7 @@ lisp.exec = function (expr, env)
 
     -- print("checking whether env has " .. head)
     local item = env[head]
-    if not item then
+    if item == nil then
         error("env does not have '"..head.."'")
         return nil -- uhhh, what else?
     elseif type(item) ~= 'function' then -- assuming string/number. what else...?
