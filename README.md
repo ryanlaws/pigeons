@@ -1,6 +1,6 @@
 # Pigeons
 Pigeons hopes at some point to become a message (i.e. event) handling library
-and accompanying programming tool. Lisp is the glue.
+and accompanying programming tool (keyboard optional). Lisp is the glue.
 
 ## What does it do?
 Right now? It just logs incoming messages (key/encoder, MIDI) to the screen.
