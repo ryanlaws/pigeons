@@ -1,9 +1,30 @@
-local message = {}
+local m = {}
+
+m.logs = {}
+
+local listeners = {}
+local max_log_size = 8
+local spinner_max_index = 10
+local spinner_index = 0
+
+m.log = function (msg)
+    if #m.logs >= max_log_size then
+        table.remove(m.logs, 1)
+    end
+    table.insert(m.logs, { message=msg, spinner_index=spinner_index })
+    spinner_index = (spinner_index + 1) % spinner_max_index
+end
 
 -- may need responsibilities split somewhat
-message.transmit = function (message_type, message)
+m.transmit = function (message_type, msg)
     -- getting time immediately is good for latency
     local now = util.time()
+    local msg = {
+        message_type=message_type, 
+        message=msg, 
+        now=now
+    }
+
     if not message_type then
         utils.warn("message has no type, ignoring")
         return false
@@ -15,11 +36,7 @@ message.transmit = function (message_type, message)
         return false
     end
 
-    local env = lisp.make_env({
-        message_type=message_type, 
-        message=message, 
-        now=now
-    })
+    local env = lisp.make_env(msg)
 
     -- something feels off here
     for i = 1,#handlers do
@@ -30,11 +47,15 @@ message.transmit = function (message_type, message)
         local derp = lisp.exec(handlers[i], env)
         -- print((util.time() % 1000) .. " - finish handler "..i.." for "..message_type) 
     end
+
+    m.log(msg)
+    -- this is very tacky. I don't like it. 
+    ui.dirty = true
 end
 
 -- TODO: implement in lisp so we can utilize environment
 --       this will be useful when e.g. switching modes (and envs)
-message.attach = function (message_type, handler)
+m.attach = function (message_type, handler)
     if type(handler) == 'string' then handler = { handler } end
     if listeners[message_type] == nil then listeners[message_type] = {} end
 
@@ -45,7 +66,7 @@ end
 
 -- this may be unnecessary
 -- it is useful for discoverability though
-message.identify = function (name)
+m.identify = function (name)
     if listeners[name] ~= nil then
         utils.warn("message", name, "already identified")
         return false
@@ -54,4 +75,4 @@ message.identify = function (name)
     return true
 end
 
-return message
+return m
