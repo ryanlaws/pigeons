@@ -1,5 +1,4 @@
 # TODO
-- [ ] Remove the stupid helixes var
 - [ ] Implement MIDI output handlers
 - [ ] Implement UI
     - [ ] Visual (keyboard-free) expression editor
@@ -35,4 +34,5 @@
         - [x] Lisp
         - [x] Utils
         - [x] Core
+- [x] Remove the stupid helixes var
 

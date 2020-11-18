@@ -14,7 +14,7 @@ local spinner_pixels = {
 ui.dirty = true
 ui.fps = 30
 
-ui.draw_spinner = function(x, y, frame, helixes)
+ui.draw_spinner = function(x, y, frame)
     local points = {}
     screen.line_width(1)
     frame = string.char(65 + frame)
@@ -33,7 +33,6 @@ ui.draw_spinner = function(x, y, frame, helixes)
             screen.fill()
         end
     end
-    table.insert(helixes, points)
 end
 
 ui.draw_checkers = function()
@@ -64,14 +63,13 @@ ui.draw = function ()
         return
     end
 
-    local helixes = {}
     for i=1,#message.logs do
         local msg = message.logs[i].message
         local spinner_index = message.logs[i].spinner_index
-        ui.draw_spinner(0, (font_size - 1) * (i - 1) + 1, spinner_index, helixes)
+        ui.draw_spinner(0, (font_size - 1) * (i - 1) + 1, spinner_index)
 
         screen.level(15)
-        screen.move(9, (font_size - 1) * i)
+        screen.move(11, (font_size - 1) * i)
         screen.text(ui.message_to_string(msg))
     end
 
@@ -131,7 +129,8 @@ end
 
 local midi_to_str = function (m) 
     local s = ' '
-    return m['long-type']
+    -- return m['long-type']
+    return m['type']
         ..s..(m.raw[1] or s)
         ..s..(m.raw[2] or s)
         ..s..(m.raw[3] or s)
