@@ -11,11 +11,9 @@ end
 
 core.print_expr = function (args, env)
     local printable = args[1]
-    -- print("printing result of expression "..utils.table_to_string(printable))
     -- assume we only care about first arg of expression
     local result = lisp.exec(printable, env)
     print(utils.table_to_string(result))
-    -- print((util.time() % 1000).." - "..result)
 end
 
 core.print_table = function (args, env)
@@ -51,7 +49,6 @@ core['or'] = function (args, env)
 end
 
 core.cond = function (args, env)
-    -- print("executing IF")
     local result = lisp.exec(args[1], env)
     if result then
         return lisp.exec(args[2], env)
@@ -61,12 +58,9 @@ core.cond = function (args, env)
 end
 
 core.smush = function (args, env)
-    -- print("exectuing SMUUUSH")
     local str = ""
     for i=1,#args do
-        -- print("smushing expr: "..utils.table_to_string(args[i]).."")
         local val = lisp.exec(args[i], env)
-        -- print("smushing value: "..utils.table_to_string(val).."")
         if type(val) == 'boolean' then
             val = val and '(true)' or '(false)'
         end
@@ -77,13 +71,8 @@ end
 
 core.message_prop = function (args, env)
     local prop = args[1]
-    -- print("checking prop " .. prop)
-    --[[print("checking message prop "
-        ..utils.table_to_string(prop).." on "
-        ..utils.table_to_string(env.message)) --]]
     -- TODO: validate / handle errors
-    -- print("found value "..utils.table_to_string(env.message[prop]))
-    return env.message[prop]
+    return env[prop]
 end
 
 -- I got a feeling this one's gonna be short-lived
@@ -114,7 +103,6 @@ core.defglobal = function(args, env)
     elseif type(args[2]) == nil then
         error("nil value to defglobal")
     else
-        -- print("assigning "..args[1])
         -- totally fine to eval here
         lisp.defglobal(args[1], lisp.exec(args[2], env))
     end
@@ -127,6 +115,28 @@ core['do'] = function(args, env)
     end
     return result
 end
+
+core['pairs-to-table'] = function (args, env)
+    local t = {}
+    local count = #args
+    for i=1, #args, 2  do
+        if i+1 <= #args then
+            local k = lisp.exec(args[i], env)
+            local v = lisp.exec(args[i + 1], env)
+            if type(k) == 'string' and v ~= nil then
+                t[k] = t[v]
+            end
+        end 
+    end
+end
+
+core['tx'] = function(args, env)
+    local message_type = lisp.exec(args[1], env)
+    local msg = lisp.exec(args[2], env)
+    message.transmit(message_type, msg)
+end
+
+
 -- stinky
 -- could probably just iterate over all these keys
 lisp.defglobal('print-message', core.print_message)

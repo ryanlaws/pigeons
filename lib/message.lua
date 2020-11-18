@@ -3,8 +3,8 @@ local m = {}
 m.logs = {}
 
 local listeners = {}
-local max_log_size = 8
-local spinner_max_index = 10
+local max_log_size = 9
+local spinner_max_index = 12
 local spinner_index = 0
 
 m.log = function (msg)
@@ -19,11 +19,8 @@ end
 m.transmit = function (message_type, msg)
     -- getting time immediately is good for latency
     local now = util.time()
-    local msg = {
-        message_type=message_type, 
-        message=msg, 
-        now=now
-    }
+    msg.now = now
+    msg.message_type = message_type
 
     if not message_type then
         utils.warn("message has no type, ignoring")
@@ -40,12 +37,7 @@ m.transmit = function (message_type, msg)
 
     -- something feels off here
     for i = 1,#handlers do
-        -- print((util.time() % 1000) .. " - start handler "..i.." for "..message_type) 
-        -- print("message:"..utils.table_to_string(message))
-        -- print("handler:"..utils.table_to_string(handlers[i]))
-        -- lisp.exec(handlers[i], message_type, message, now)
         local derp = lisp.exec(handlers[i], env)
-        -- print((util.time() % 1000) .. " - finish handler "..i.." for "..message_type) 
     end
 
     m.log(msg)

@@ -1,9 +1,7 @@
 # TODO
+- [ ] Remove the stupid helixes var
 - [ ] Implement MIDI output handlers
-- [ ] Flatten message structure (nesting is yucky)
 - [ ] Implement UI
-    - [ ] Menus
-        - [x] Menu state (button press)
     - [ ] Visual (keyboard-free) expression editor
     - [ ] Message "learn" (like MIDI learn)
 - [ ] Add debug mode
@@ -19,6 +17,11 @@
     - [ ] Parse strings into expressions 
 
 # DONE
+- [x] Flatten message structure (nesting is yucky)
+- [x] Implement Menus
+    - [x] Menu state (button press)
+    - [x] Change background (log) display - colors/mask (draw_checkers)
+    - [x] Draw menu border
 - [x] Implement MIDI inputs -> messages
 - [x] Norns screen log (text-only for now)
     - [x] Log incoming messages
