@@ -53,6 +53,7 @@ ui.draw = function ()
     screen:ping()
     screen.clear()
     screen.font_size(font_size)
+    screen.font_face(1)
     screen.level(15)
 
     if #message.logs == 0 then
@@ -138,7 +139,7 @@ end
 -- dumb. TODO: please use lisp for this. ugh
 local norns_to_str = function (t) 
     return function (m)
-        return t..' #'..m.number..': '..m.value 
+        return t..' #'..m.n..': '..m.v 
     end
 end
 
@@ -176,6 +177,18 @@ end
         - select position
         - save
         - exit
+
+    The core commands need to be shortened
+    The screen only fits a small amount of text
+    One immediate challenge there is auto-indenting
+    Could probably use parens to inc/dec indent level
+    Highlighting matching braces would be nice
+
+    There will probably be at least 3 "modes" or screens:
+    - monitor/log/recorder
+    - property selector/sampler
+    - script editor
+    I'm not sure yet how these relate
 ]]
 
 return ui

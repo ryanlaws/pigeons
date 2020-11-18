@@ -29,7 +29,7 @@ core['not'] = function (args, env)
     return not lisp.exec(args[1], env)
 end
 
-core['and'] = function (args, env)
+core['&'] = function (args, env)
     local result = true
     for i=1,#args do
         if not lisp.exec(args[i], env) then
@@ -227,7 +227,7 @@ lisp.defglobal('print-table', core['print-table'])
 lisp.defglobal('smush', core.smush)
 lisp.defglobal('if', core.cond)
 lisp.defglobal('=', core.eq)
-lisp.defglobal('and', core['and'])
+lisp.defglobal('&', core['&'])
 lisp.defglobal('not', core['not'])
 lisp.defglobal('prop', core.prop)
 lisp.defglobal('def', core.def)

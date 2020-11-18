@@ -73,9 +73,9 @@ function setup_messages()
 
     lisp.defglobal('menu-open', false)
     -- menus make clear the need to switch envs
-    message.attach('btn', {'if', {'and',
-                {'=', 1, {'number'}},
-                {'=', 1, {'value'}}},
+    message.attach('btn', {'if', {'&',
+                {'=', 1, {'n'}},
+                {'=', 1, {'v'}}},
             {'do', 
                 {'defglobal', 'menu-open', {'not', {'menu-open'}}},
                 {'print-expr', {'smush', 'menu open: ', {'menu-open'}}}
@@ -106,12 +106,12 @@ end
 -- is it arrogant to change these names?
 -- 'enc' is terse but maybe confusing
 -- 'key' is definitely confusing alongside HID (keyboard)
-function enc(i, x)
-    message.transmit('enc', { number=i, value=x })
+function enc(n, v)
+    message.transmit('enc', { n=n, v=v })
 end
 
-function key(i, x)
-    message.transmit('btn', { number=i, value=x })
+function key(n, v)
+    message.transmit('btn', { n=n, v=v })
 end
 
 function set(name, value)
