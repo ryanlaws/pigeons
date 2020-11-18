@@ -1,7 +1,8 @@
 local core = {}
 
 -- ok, I added env and it looks kinda silly now. oh well.
-core.print_message = function (_, env)
+-- I think this might be useless now w/ non-nested messages
+core['print-message'] = function (_, env)
     print(math.floor(env.now * 1000)..' - message of type '
         ..env.message_type..':')
     for k, v in pairs(env.message) do
@@ -9,14 +10,14 @@ core.print_message = function (_, env)
     end
 end
 
-core.print_expr = function (args, env)
+core['print-expr'] = function (args, env)
     local printable = args[1]
     -- assume we only care about first arg of expression
     local result = lisp.exec(printable, env)
     print(utils.table_to_string(result))
 end
 
-core.print_table = function (args, env)
+core['print-table'] = function (args, env)
     print(utils.table_to_string(args[1]))
 end
 
@@ -69,10 +70,13 @@ core.smush = function (args, env)
     return str
 end
 
-core.message_prop = function (args, env)
+core.prop = function (args, env)
     local prop = args[1]
-    -- TODO: validate / handle errors
-    return env[prop]
+    if type(prop) ~= 'string' then return nil end
+
+    local t = lisp.exec(args[2], env)
+    if type(t) ~= 'table' then return nil end
+    return t[prop]
 end
 
 -- I got a feeling this one's gonna be short-lived
@@ -137,19 +141,99 @@ core['tx'] = function(args, env)
 end
 
 
+--[[
+-- lol the smush string is weird... how to fix...
+(if (and (= 1 (number)) (= 1 (value))) 
+    (do (defglobal menu-open (not (menu-open))) 
+        (print-expr (smush menu open: (menu-open)))))
+]]
+
+core['expr-to-s-list'] = function(args, env, list)
+    if type(args) ~= 'table' then error('bad args') end
+    if type(args[1]) ~= 'table' then error('arg is not a table') end
+
+    if list == nil then 
+        list = {}
+    elseif type(list) ~= 'table' then 
+        error('list is not a table') 
+    end
+
+    table.insert(list, '(')
+
+    for i=1,#args[1] do
+        local item = args[1][i]
+        if type(item) == 'table' then 
+            -- gross mutation 
+            core['expr-to-s-list']({ item }, env, list)
+        elseif type(item) == 'string' then
+            table.insert(list, item)
+        elseif type(item) == 'number' then
+            table.insert(list, item)
+        else
+            error("I don't know what to do with a "..type(item))
+        end
+    end
+
+    table.insert(list, ')')
+    return list
+end
+
+core['join'] = function(args, env)
+    if type(args) ~= 'table' then error('bad args') end
+    if type(args[1]) ~= 'table' then error('arg is not a table') end
+
+    local glue
+
+    if args[2] == nil then 
+        glue = " "
+    elseif type(args[2]) ~= 'string' then 
+        glue = args[2]
+    else
+        error("I don't know what to do with a "..type(args[2]))
+    end
+
+    local str = ""
+
+    for i=1,#args[1] do
+        local item = args[1][i]
+        if type(item) == 'string' then
+            str = str..glue..item
+        elseif type(item) == 'number' then
+            str = str..glue..item
+        else
+            error("I don't know what to do with a "..type(item))
+        end
+    end
+
+    return str
+end
+
+-- eh, I don't know if we need this yet. 
+-- was thinking it'd be good for menu text 
+-- but idk if it handles line breaks.
+core['wrap-string'] = function(args, env)
+    if type(args) ~= 'table' then error('bad args') end
+    if type(args[1]) ~= 'string' then error('arg is not a table') end
+
+    -- TODO: implement (split into chunks, add line breaks, etc.)
+    return args[1]
+end
+
 -- stinky
 -- could probably just iterate over all these keys
-lisp.defglobal('print-message', core.print_message)
-lisp.defglobal('print-expr', core.print_expr)
-lisp.defglobal('print-table', core.print_table)
+lisp.defglobal('print-message', core['print-message'])
+lisp.defglobal('print-expr', core['print-expr'])
+lisp.defglobal('print-table', core['print-table'])
 lisp.defglobal('smush', core.smush)
 lisp.defglobal('if', core.cond)
 lisp.defglobal('=', core.eq)
 lisp.defglobal('and', core['and'])
 lisp.defglobal('not', core['not'])
-lisp.defglobal('message-prop', core.message_prop)
+lisp.defglobal('prop', core.prop)
 lisp.defglobal('def', core.def)
 lisp.defglobal('defglobal', core.defglobal)
 lisp.defglobal('do', core['do'])
+lisp.defglobal('join', core['join'])
+lisp.defglobal('expr-to-s-list', core['expr-to-s-list'])
 
 return core

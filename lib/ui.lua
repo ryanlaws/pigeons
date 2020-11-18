@@ -108,6 +108,21 @@ ui.draw_menu = function ()
     screen.text("pigeons.")
     screen.move(flex + 5, flex + font_size * 2 + 2)
     screen.text("(insert useful menu here)")
+    screen.stroke()
+
+    print(core.join({ core['expr-to-s-list']({ message.listeners.btn[1] }) }))
+
+    screen.clear()
+    screen.font_face(2)
+    screen.level(3)
+    screen.move(0, font_size)
+    screen.text("(if (and (= 1 (number)) (= 1 (value)))")
+    screen.move(0, font_size * 2)
+    screen.text("    (do (defglobal menu-open (not (menu-open)))")
+    screen.move(0, font_size * 3)
+    screen.text("        (print-expr (smush menu open: (menu-open)))))")
+    screen.stroke()
+    -- print(utils.table_to_string(message.listeners.btn[1]))
 end
 
 ui.redraw_clock = function ()

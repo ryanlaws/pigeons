@@ -74,8 +74,8 @@ function setup_messages()
     lisp.defglobal('menu-open', false)
     -- menus make clear the need to switch envs
     message.attach('btn', {'if', {'and',
-                {'=', 1, {'message-prop', 'number' }},
-                {'=', 1, {'message-prop', 'value' }}},
+                {'=', 1, {'number'}},
+                {'=', 1, {'value'}}},
             {'do', 
                 {'defglobal', 'menu-open', {'not', {'menu-open'}}},
                 {'print-expr', {'smush', 'menu open: ', {'menu-open'}}}
@@ -86,14 +86,14 @@ function setup_messages()
     -- lisp.defglobal('last-num', '(nil)')
     -- message.attach('enc', { 'do', 
     --         {'print-expr', {'smush', "last number: ", {'last-num'}}},
-    --         {'defglobal', 'last-num', {'message-prop', 'value'}}})
+    --         {'defglobal', 'last-num', {'value'}}})
 
     -- message.attach('enc',
     --     {'if',
-    --         {'=', 3, {'message-prop', 'number' }},
+    --         {'=', 3, {'number'}},
     --         {'print-expr', 'we got a THREE!'},
     --         {'print-expr',
-    --             {'smush', "what's '", {'message-prop', 'number'}, "' ?" }}})
+    --             {'smush', "what's '", {'number'}, "' ?" }}})
     
     -- all this MIDI stuff can proooobably get moved to the lib.
 

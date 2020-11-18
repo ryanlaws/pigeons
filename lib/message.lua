@@ -1,8 +1,8 @@
 local m = {}
 
 m.logs = {}
+m.listeners = {}
 
-local listeners = {}
 local max_log_size = 9
 local spinner_max_index = 12
 local spinner_index = 0
@@ -27,7 +27,7 @@ m.transmit = function (message_type, msg)
         return false
     end
 
-    local handlers = listeners[message_type]
+    local handlers = m.listeners[message_type]
     if not handlers then
         utils.warn("message", message_type, "not identified, ignoring")
         return false
@@ -49,21 +49,21 @@ end
 --       this will be useful when e.g. switching modes (and envs)
 m.attach = function (message_type, handler)
     if type(handler) == 'string' then handler = { handler } end
-    if listeners[message_type] == nil then listeners[message_type] = {} end
+    if m.listeners[message_type] == nil then m.listeners[message_type] = {} end
 
     --[[ to avoid dupes, might convert to string
     (e.g. s-expression)  & check collisions ]]
-    table.insert(listeners[message_type], handler)
+    table.insert(m.listeners[message_type], handler)
 end
 
 -- this may be unnecessary
 -- it is useful for discoverability though
 m.identify = function (name)
-    if listeners[name] ~= nil then
+    if m.listeners[name] ~= nil then
         utils.warn("message", name, "already identified")
         return false
     end
-    listeners[name] = {}
+    m.listeners[name] = {}
     return true
 end
 
