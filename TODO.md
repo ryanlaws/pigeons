@@ -1,5 +1,12 @@
 # TODO
 - [ ] Implement MIDI output handlers
+- [ ] Save and load .plisp.lua (poor man's sexpr) as listener
+- [ ] Implement octatrack MIDI library
+- [ ] Refactor everything to use Lisp as much as possible
+- [ ] Real Lisp
+    - [ ] Persist expressions as strings
+    - [ ] Parse strings into expressions 
+- [ ] Implement persistent modal environments
 - [ ] Implement UI
     - [ ] Visual (keyboard-free) expression editor
     - [ ] Message "learn" (like MIDI learn)
@@ -10,10 +17,6 @@
 - [ ] Implement message throttling
     - [ ] Timers/clocks
     - [ ] Execution context (like closure env) - may need IDs, etc.
-- [ ] Refactor everything to use Lisp as much as possible
-- [ ] Real Lisp
-    - [ ] Persist expressions as strings
-    - [ ] Parse strings into expressions 
 
 # DONE
 - [x] Flatten message structure (nesting is yucky)
