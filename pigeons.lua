@@ -30,20 +30,21 @@ function setup_messages()
 
     lisp.defglobal('menu-open', false)
     -- menus make clear the need to switch envs
-    message.attach('btn', {'if', {'&',
-                {'=', 1, {'n'}},
-                {'=', 1, {'v'}}},
-            {'do', 
-                {'defglobal', 'menu-open', {'not', {'menu-open'}}},
-                {'print-expr', {'smush', 'menu open: ', {'menu-open'}}}
-            }})
+    message.attach('btn', 
+        {'?', {'&', {'=', 1, {'n'}}, {'=', 1, {'v'}}},
+            {'gdef', 'menu-open', {'!', {'menu-open'}}}})
+    -- message.attach('btn', {'?', {'&', {'=', 1, {'n'}}, {'=', 1, {'v'}}},
+    --         {'do', 
+    --             {'gdef', 'menu-open', {'!', {'menu-open'}}},
+    --             {'print-expr', {'smush', 'menu open: ', {'menu-open'}}}
+    --         }})
     -- message.attach('btn', 'print-message')
     -- message.attach('enc', 'print-message')
 
     -- lisp.defglobal('last-num', '(nil)')
     -- message.attach('enc', { 'do', 
     --         {'print-expr', {'smush', "last number: ", {'last-num'}}},
-    --         {'defglobal', 'last-num', {'value'}}})
+    --         {'gdef', 'last-num', {'value'}}})
 
     -- message.attach('enc',
     --     {'if',

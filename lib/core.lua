@@ -21,11 +21,11 @@ core['print-table'] = function (args, env)
     print(utils.table_to_string(args[1]))
 end
 
-core.eq = function (args, env)
+core['='] = function (args, env)
     return lisp.exec(args[1], env) == lisp.exec(args[2], env)
 end
 
-core['not'] = function (args, env)
+core['!'] = function (args, env)
     return not lisp.exec(args[1], env)
 end
 
@@ -39,7 +39,7 @@ core['&'] = function (args, env)
     return result
 end
 
-core['or'] = function (args, env)
+core['|'] = function (args, env)
     local result = false
     for i=1,#args do
         if lisp.exec(args[i], env) then
@@ -49,7 +49,7 @@ core['or'] = function (args, env)
     return result
 end
 
-core.cond = function (args, env)
+core['?'] = function (args, env)
     local result = lisp.exec(args[1], env)
     if result then
         return lisp.exec(args[2], env)
@@ -101,11 +101,11 @@ core.def = function(args, env)
 end
 
 -- mayyyybe a bad idea
-core.defglobal = function(args, env)
+core['gdef'] = function(args, env)
     if type(args[1]) ~= 'string' then
-        error("non-string key to defglobal")
+        error("non-string key to ['gdef']")
     elseif type(args[2]) == nil then
-        error("nil value to defglobal")
+        error("nil value to ['gdef']")
     else
         -- totally fine to eval here
         lisp.defglobal(args[1], lisp.exec(args[2], env))
@@ -225,13 +225,14 @@ lisp.defglobal('print-message', core['print-message'])
 lisp.defglobal('print-expr', core['print-expr'])
 lisp.defglobal('print-table', core['print-table'])
 lisp.defglobal('smush', core.smush)
-lisp.defglobal('if', core.cond)
-lisp.defglobal('=', core.eq)
+lisp.defglobal('?', core['?'])
+lisp.defglobal('=', core['='])
 lisp.defglobal('&', core['&'])
-lisp.defglobal('not', core['not'])
+lisp.defglobal('|', core['|'])
+lisp.defglobal('!', core['!'])
 lisp.defglobal('prop', core.prop)
 lisp.defglobal('def', core.def)
-lisp.defglobal('defglobal', core.defglobal)
+lisp.defglobal('gdef', core['gdef'])
 lisp.defglobal('do', core['do'])
 lisp.defglobal('join', core['join'])
 lisp.defglobal('expr-to-s-list', core['expr-to-s-list'])
