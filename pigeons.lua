@@ -1,69 +1,26 @@
 -- globals are kinda gross.
 -- but probably fine.
 -- if not, there's always DI. heh.
+_ui = include('lib/_ui')
+_midi = include('lib/_midi')
 utils = include('lib/utils')
 lisp = include('lib/lisp')
 core = include('lib/core')
 message = include('lib/message')
-ui = include('lib/ui')
 
 -- TODO: add debug mode to toggle logging. it's noisy
 
 -- TODO: change this to env creation + reset
 --       don't wanna wipe everything, keep e.g. core
-function clear_all()
-    -- TODO: rename to handlers
-    listeners = {}
-        -- knob/enc
-        -- UI?
-        -- app-level (load, save, init, etc.)?
-        -- MIDI
-        -- HID
-        -- crow?
-
-    env = {}
-        -- MIDI
-        -- synth
-        -- softcut
-        -- crow
-        -- UI
-end
-
--- function transmit(...)
---     message.transmit(...)
---     redraw()
--- end
 
 function init()
-    clear_all()
     setup_messages()
-    setup_midi()
-    redraw_clock_id = clock.run(ui.redraw_clock)
+    _midi.init()
+    redraw_clock_id = clock.run(_ui.redraw_clock)
 end
 
 function cleanup()
     clock.cancel(redraw_clock_id)
-end
-
-function setup_midi()
-    midi.add = function (id, name, dev)
-        message.transmit('midi-add-device', { id=id, name=name, dev=dev })
-    end
-    midi.update_devices()
-
-    -- message.attach('midi', {'print_expr', {'message'}})
-    for i, dev in pairs(midi.devices) do
-        midi.devices[dev.id].event = function (event)
-            local msg = midi.to_msg(event)
-            local long_type = 'midi-'..msg.type:gsub("_", "-")
-            msg['dev-id'] = dev.id
-            msg['dev-name'] = dev.name
-            msg['long-type'] = long_type
-            msg['raw'] = event
-            message.transmit('midi', msg)
-            -- message.transmit(long_type, msg) -- have to attach to each :|
-        end
-    end
 end
 
 function setup_messages()
@@ -114,10 +71,6 @@ function key(n, v)
     message.transmit('btn', { n=n, v=v })
 end
 
-function set(name, value)
-    env[name] = value
-end
-
 function redraw()
-    ui.draw()
+    _ui.draw()
 end

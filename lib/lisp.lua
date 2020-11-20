@@ -9,6 +9,13 @@ lisp.defglobal = function (name, item)
     global_env[name] = item
 end
 
+-- also need outputs for:
+    -- MIDI
+    -- synth
+    -- softcut
+    -- crow
+    -- UI
+
 -- copying envs could be useful
 lisp.make_env = function (new_env)
     if new_env == nil then

@@ -1,4 +1,4 @@
-local ui = {}
+local _ui = {}
 
 local font_size = 8
 local spinner = {'-', '\\', '|', '/' }
@@ -11,10 +11,10 @@ local spinner_pixels = {
     '  HI  '
 }
 
-ui.dirty = true
-ui.fps = 30
+_ui.dirty = true
+_ui.fps = 30
 
-ui.draw_spinner = function(x, y, frame)
+_ui.draw_spinner = function(x, y, frame)
     local points = {}
     screen.line_width(1)
     frame = string.char(65 + frame)
@@ -35,7 +35,7 @@ ui.draw_spinner = function(x, y, frame)
     end
 end
 
-ui.draw_checkers = function()
+_ui.draw_checkers = function()
     screen.line_width(1)
     screen.level(0)
     for x=1,128 do
@@ -49,7 +49,7 @@ ui.draw_checkers = function()
     end
 end
 
-ui.draw = function ()
+_ui.draw = function ()
     screen:ping()
     screen.clear()
     screen.font_size(font_size)
@@ -67,25 +67,25 @@ ui.draw = function ()
     for i=1,#message.logs do
         local msg = message.logs[i].message
         local spinner_index = message.logs[i].spinner_index
-        ui.draw_spinner(0, (font_size - 1) * (i - 1) + 1, spinner_index)
+        _ui.draw_spinner(0, (font_size - 1) * (i - 1) + 1, spinner_index)
 
         screen.level(15)
         screen.move(11, (font_size - 1) * i)
-        screen.text(ui.message_to_string(msg))
+        screen.text(_ui.message_to_string(msg))
     end
 
     if lisp.exec({ 'menu-open' }) then
-        ui.draw_menu()
+        _ui.draw_menu()
     end
 
     screen.stroke()
     screen.update()
 end
 
-ui.draw_menu = function ()
+_ui.draw_menu = function ()
     local gutter = 3
     local bevel = 2
-    ui.draw_checkers()
+    _ui.draw_checkers()
     screen.level(0)
     screen.rect(gutter + 1, 
         gutter + 1, 
@@ -126,13 +126,13 @@ ui.draw_menu = function ()
     -- print(utils.table_to_string(message.listeners.btn[1]))
 end
 
-ui.redraw_clock = function ()
+_ui.redraw_clock = function ()
     while true do
-        if ui.dirty then 
+        if _ui.dirty then 
             redraw() 
-            ui.dirty = false
+            _ui.dirty = false
         end
-        clock.sleep(1 / ui.fps)
+        clock.sleep(1 / _ui.fps)
     end
 end
 
@@ -154,7 +154,7 @@ end
 
 local empty = function () return '' end
 
-ui.message_to_string = function (m)
+_ui.message_to_string = function (m)
     local fn = ({
         enc=norns_to_str('enc'),
         btn=norns_to_str('btn'),
@@ -191,4 +191,4 @@ end
     I'm not sure yet how these relate
 ]]
 
-return ui
+return _ui

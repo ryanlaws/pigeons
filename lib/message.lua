@@ -2,6 +2,12 @@ local m = {}
 
 m.logs = {}
 m.listeners = {}
+    -- [ ] UI?
+    -- [ ] app-level (load, save, init, etc.)?
+    -- [ ] HID
+    -- [ ] crow?
+    -- [x] MIDI
+    -- [x] knob/enc
 
 local max_log_size = 9
 local spinner_max_index = 12
@@ -42,7 +48,7 @@ m.transmit = function (message_type, msg)
 
     m.log(msg)
     -- this is very tacky. I don't like it. 
-    ui.dirty = true
+    _ui.dirty = true
 end
 
 -- TODO: implement in lisp so we can utilize environment
