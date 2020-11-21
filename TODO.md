@@ -1,5 +1,4 @@
 # TODO
-- [ ] Implement MIDI output handlers
 - [ ] Save and load .plisp.lua (poor man's sexpr) as listener
 - [ ] Implement octatrack MIDI library
 - [ ] Refactor everything to use Lisp as much as possible
@@ -19,6 +18,7 @@
     - [ ] Execution context (like closure env) - may need IDs, etc.
 
 # DONE
+- [x] Implement (basic) MIDI output handlers
 - [x] Flatten message structure (nesting is yucky)
 - [x] Implement Menus
     - [x] Menu state (button press)

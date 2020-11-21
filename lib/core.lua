@@ -21,6 +21,10 @@ core['print-table'] = function (args, env)
     print(utils.table_to_string(args[1]))
 end
 
+core['env'] = function (args, env)
+    return env
+end
+
 core['='] = function (args, env)
     return lisp.exec(args[1], env) == lisp.exec(args[2], env)
 end
@@ -58,7 +62,19 @@ core['?'] = function (args, env)
     end
 end
 
-core.smush = function (args, env)
+-- TODO: move to _midi somehow
+-- TODO: use vports to find device
+core['midi'] = function (args, env)
+    local dev_id = lisp.exec(args[1], env)
+    local device = type(dev_id) == 'number' and midi.devices[dev_id] or nil
+    if device == nil then 
+        error("bogus MIDI device ID!")
+    end
+
+    device:send(lisp.exec(args[2], env))
+end
+
+core['smush'] = function (args, env)
     local str = ""
     for i=1,#args do
         local val = lisp.exec(args[i], env)
@@ -70,7 +86,7 @@ core.smush = function (args, env)
     return str
 end
 
-core.prop = function (args, env)
+core['prop'] = function (args, env)
     local prop = args[1]
     if type(prop) ~= 'string' then return nil end
 
@@ -87,7 +103,7 @@ end
 
 -- gonna want defn too, eventually
 -- that sounds like a pain
-core.def = function(args, env)
+core['def'] = function(args, env)
     if type(args[1]) ~= 'string' then
         error("def name is not a string, what the heck dude?")
         return nil
@@ -224,14 +240,16 @@ end
 lisp.defglobal('print-message', core['print-message'])
 lisp.defglobal('print-expr', core['print-expr'])
 lisp.defglobal('print-table', core['print-table'])
-lisp.defglobal('smush', core.smush)
+lisp.defglobal('smush', core['smush'])
+lisp.defglobal('env', core['env'])
 lisp.defglobal('?', core['?'])
 lisp.defglobal('=', core['='])
 lisp.defglobal('&', core['&'])
 lisp.defglobal('|', core['|'])
 lisp.defglobal('!', core['!'])
-lisp.defglobal('prop', core.prop)
-lisp.defglobal('def', core.def)
+lisp.defglobal('midi', core['midi'])
+lisp.defglobal('prop', core['prop'])
+lisp.defglobal('def', core['def'])
 lisp.defglobal('gdef', core['gdef'])
 lisp.defglobal('do', core['do'])
 lisp.defglobal('join', core['join'])

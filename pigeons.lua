@@ -27,12 +27,17 @@ function setup_messages()
     message.identify('enc')
     message.identify('btn')
     message.identify('midi')
+    message.identify('midi-add-device')
+    message.identify('midi-remove-device')
 
     lisp.defglobal('menu-open', false)
     -- menus make clear the need to switch envs
-    message.attach('btn', 
-        {'?', {'&', {'=', 1, {'n'}}, {'=', 1, {'v'}}},
-            {'gdef', 'menu-open', {'!', {'menu-open'}}}})
+    message.attach('btn', {'?',{'&',{'=',1,{'n'}},{'=',1,{'v'}}},
+            {'gdef','menu-open',{'!',{'menu-open'}}}})
+    message.attach('midi', {'do',
+        -- {'print-expr',{'raw'}},
+        {'midi',6,{'raw'}}
+    })
     -- message.attach('btn', {'?', {'&', {'=', 1, {'n'}}, {'=', 1, {'v'}}},
     --         {'do', 
     --             {'gdef', 'menu-open', {'!', {'menu-open'}}},
@@ -56,7 +61,7 @@ function setup_messages()
     -- all this MIDI stuff can proooobably get moved to the lib.
 
     -- this doesn't actually do anything... unless you plug/unplug stuff
-    message.attach('midi-add-device', {'print-expr', {'message'}})
+    message.attach('midi-add-device', {'print-table', {'env'}})
 end
 
 -- can enc/key be defined in a lib? I don't see why not...

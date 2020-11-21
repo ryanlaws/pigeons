@@ -4,28 +4,35 @@ local font_size = 8
 local spinner = {'-', '\\', '|', '/' }
 local spinner_pixels = {
     '  CB  ',
-    ' D  A ',
-    'E    L',
-    'F    K',
-    ' G  J ',
+    ' D70A ',
+    'E6  1L',
+    'F5  2K',
+    ' G43J ',
     '  HI  '
 }
 
 _ui.dirty = true
 _ui.fps = 30
 
-_ui.draw_spinner = function(x, y, frame)
-    local points = {}
+_ui.draw_spinner = function(x, y, frame1, frame2)
     screen.line_width(1)
-    frame = string.char(65 + frame)
+    frame1dim = string.char(65 + ((frame1 + 6) % 12))
+    frame1 = string.char(65 + frame1)
+    frame2dim = string.char(48 + ((frame2 + 5) % 10))
+    frame2 = string.char(48 + frame2)
     for row=1,#spinner_pixels do
         for col=1,6 do
             local value = spinner_pixels[row]:sub(col, col)
             if value == ' ' then
                 screen.level(0)
-            elseif value == frame then
-                table.insert(points, { x=x+row, y=y+col })
+            elseif value == frame1 then
                 screen.level(15)
+            elseif value == frame2 then
+                screen.level(7)
+            elseif value == frame1dim then
+                screen.level(2)
+            elseif value == frame2dim then
+                screen.level(1)
             else
                 screen.level(0)
             end
@@ -66,11 +73,12 @@ _ui.draw = function ()
 
     for i=1,#message.logs do
         local msg = message.logs[i].message
-        local spinner_index = message.logs[i].spinner_index
-        _ui.draw_spinner(0, (font_size - 1) * (i - 1) + 1, spinner_index)
+        local spinner_index1 = message.logs[i].spinner_index1
+        local spinner_index2 = message.logs[i].spinner_index2
+        _ui.draw_spinner(-2, (font_size - 1) * (i - 1) + 1, spinner_index1, spinner_index2)
 
         screen.level(15)
-        screen.move(11, (font_size - 1) * i)
+        screen.move(8, (font_size - 1) * i)
         screen.text(_ui.message_to_string(msg))
     end
 
@@ -114,7 +122,7 @@ _ui.draw_menu = function ()
     print(core.join({ core['expr-to-s-list']({ message.listeners.btn[1] }) }))
 
     screen.clear()
-    screen.font_face(2)
+    screen.font_face(1)
     screen.level(3)
     screen.move(0, font_size)
     screen.text("(if (and (= 1 (number)) (= 1 (value)))")
@@ -146,21 +154,42 @@ end
 local midi_to_str = function (m) 
     local s = ' '
     -- return m['long-type']
-    return m['type']
-        ..s..(m.raw[1] or s)
+    return m['dev-id']..' '
+        ..m['type']
+        ..s..(m.raw[1] and (m.raw[1] & 0xF) + 1 or s)
         ..s..(m.raw[2] or s)
         ..s..(m.raw[3] or s)
+end
+
+local midi_add_device = function (m) 
+    local s = ' '
+    -- return m['long-type']
+    return 'midi-add-device '
+        ..s..(m.id or s)
+        ..s..(m.name or s)
+end
+
+local midi_remove_device = function (m) 
+    local s = ' '
+    -- return m['long-type']
+    return 'midi-remove-device '
+        ..s..(m.id or s)
+        ..s..(m.name or s)
 end
 
 local empty = function () return '' end
 
 _ui.message_to_string = function (m)
+    local fn_key = m.message_type or 'unknown'
+    -- print("FUNKY FN_KEY! "..fn_key)
     local fn = ({
         enc=norns_to_str('enc'),
         btn=norns_to_str('btn'),
         midi=midi_to_str,
+        ['midi-add-device']=midi_add_device,
+        ['midi-remove-device']=midi_remove_device,
         unknown=function() return m.message_type end
-    })[m.message_type or 'unknown']
+    })[fn_key] or fn.unknown
     return fn(m)
 end
 

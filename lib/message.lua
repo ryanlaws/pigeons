@@ -10,15 +10,22 @@ m.listeners = {}
     -- [x] knob/enc
 
 local max_log_size = 9
-local spinner_max_index = 12
-local spinner_index = 0
+local spinner_max_index1 = 12
+local spinner_max_index2 = 8
+local spinner_index1 = 0
+local spinner_index2 = 0
 
 m.log = function (msg)
     if #m.logs >= max_log_size then
         table.remove(m.logs, 1)
     end
-    table.insert(m.logs, { message=msg, spinner_index=spinner_index })
-    spinner_index = (spinner_index + 1) % spinner_max_index
+    table.insert(m.logs, { 
+        message=msg, 
+        spinner_index1=spinner_index1, 
+        spinner_index2=spinner_index2 
+    })
+    spinner_index1 = (spinner_index1 + 1) % spinner_max_index1
+    spinner_index2 = (spinner_index2 + 1) % spinner_max_index2
 end
 
 -- may need responsibilities split somewhat
