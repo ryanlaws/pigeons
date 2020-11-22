@@ -33,12 +33,21 @@ utils.table_to_string = function (table, depth)
         indent = indent.."  "
     end
 
-    for k, v in pairs(table) do
-        str = str..'\n'..indent.."  "
-        if type(k) ~= 'number' then
-            str = str..k..' = '
+    if #table > 0 then
+        -- array
+        for i=1, #table do
+            str = str..'\n'..indent.."  "
+            str = str..utils.table_to_string(table[i], depth + 1)..'\n'
         end
-        str = str..utils.table_to_string(v, depth + 1)..'\n'
+    else
+        -- dict
+        for k, v in pairs(table) do
+            str = str..'\n'..indent.."  "
+            if type(k) ~= 'number' then
+                str = str..k..' = '
+            end
+            str = str..utils.table_to_string(v, depth + 1)..'\n'
+        end
     end
     return str..indent..'}'
 end
