@@ -13,7 +13,13 @@ end
 core['print-expr'] = function (args, env)
     local printable = args[1]
     -- assume we only care about first arg of expression
-    local result = lisp.exec(printable, env)
+    -- I need to be able to get the whole env... I know this is gross
+    local result 
+    if printable and #printable > 0 then 
+        result = lisp.exec(printable, env)
+    else
+        result = env
+    end
     print(utils.table_to_string(result))
 end
 
@@ -62,6 +68,14 @@ core['?'] = function (args, env)
     end
 end
 
+core['-'] = function (args, env)
+    local result = lisp.exec(args[1], env)
+    for i=2,#args do
+        result = result - lisp.exec(args[i], env)
+    end
+    return result
+end
+
 -- TODO: move to _midi somehow
 -- TODO: use vports to find device
 core['midi'] = function (args, env)
@@ -95,12 +109,6 @@ core['prop'] = function (args, env)
     return t[prop]
 end
 
--- I got a feeling this one's gonna be short-lived
-core.warn_bogus = function (_, env)
-    utils.warn(math.floor(env.now * 1000)..' - message of type '
-        ..env.message_type..' has some bogus stuff!')
-end
-
 -- gonna want defn too, eventually
 -- that sounds like a pain
 core['def'] = function(args, env)
@@ -114,6 +122,22 @@ core['def'] = function(args, env)
     return env[args[1]] == args[2]
     -- do we care if we're re-defining an existing name?
     -- nah, not yet. REASONS TO CARE NEEDED
+end
+
+-- this is kinda tacky.
+-- we want something that copies the table and redefines in the copy.
+core['defk'] = function(args, env)
+    if type(args[1]) ~= 'string' then
+        error("def name is not a string, what the heck dude?")
+        return nil
+    elseif type(args[2]) ~= 'string' and type(args[2]) ~= 'number' then
+        error("key name is not a string or number, what the heck dude?")
+        return nil
+    elseif args[3] == nil then
+        utils.warn("what's the point of defining "..args[1].."."..args[2].." as (nil)?")
+    end
+
+    env[args[1]][args[2]] = lisp.exec(args[3], env)
 end
 
 -- mayyyybe a bad idea
@@ -157,14 +181,7 @@ core['tx'] = function(args, env)
 end
 
 
---[[
--- lol the smush string is weird... how to fix...
-(if (and (= 1 (number)) (= 1 (value))) 
-    (do (defglobal menu-open (not (menu-open))) 
-        (print-expr (smush menu open: (menu-open)))))
-]]
-
-core['expr-to-s-list'] = function(args, env, list)
+core['expr-to-sexpr'] = function(args, env, list)
     if type(args) ~= 'table' then error('bad args') end
     if type(args[1]) ~= 'table' then error('arg is not a table') end
 
@@ -180,7 +197,7 @@ core['expr-to-s-list'] = function(args, env, list)
         local item = args[1][i]
         if type(item) == 'table' then 
             -- gross mutation 
-            core['expr-to-s-list']({ item }, env, list)
+            core['expr-to-sexpr']({ item }, env, list)
         elseif type(item) == 'string' then
             table.insert(list, item)
         elseif type(item) == 'number' then
@@ -192,6 +209,49 @@ core['expr-to-s-list'] = function(args, env, list)
 
     table.insert(list, ')')
     return list
+end
+
+core['at'] = function(args, env)
+    if type(args) ~= 'table' or #args < 2 then 
+        error('bad args - not table or empty table') 
+    end
+
+    local table = lisp.exec(args[1], env)
+    local key = lisp.exec(args[2], env)
+
+    if type(table) ~= 'table' then 
+        error('.at arg[1] is not a table') 
+    end
+
+    -- in fact lua accepts anything besides nil
+    -- but what's useful besides string and number?
+    if (type(key) ~= 'string') and (type(key) ~= 'number') then 
+        error('.at arg[2] is not a string or number') 
+    end
+
+    return table[key]
+end
+
+-- having both of these separate is probably only useful w/ currying
+core['of'] = function(args, env)
+    if type(args) ~= 'table' or #args < 2 then 
+        error('bad args - not table or empty table') 
+    end
+
+    local key = args[1]
+    local table = args[2]
+
+    -- in fact lua accepts anything besides nil
+    -- but what's useful besides string and number?
+    if (type(key) ~= 'string') or (type(key) ~= 'number') then 
+        error('.at arg[1] is not a string or number') 
+    end
+
+    if type(table) ~= 'table' then 
+        error('.at arg[2] is not a table') 
+    end
+
+    return table[key]
 end
 
 core['join'] = function(args, env)
@@ -208,17 +268,24 @@ core['join'] = function(args, env)
         error("I don't know what to do with a "..type(args[2]))
     end
 
+    local last_item
     local str = ""
 
     for i=1,#args[1] do
         local item = args[1][i]
         if type(item) == 'string' then
-            str = str..glue..item
+            -- TODO: move - doesn't belong here.
+            if (last_item == "(") or (item == ")")  then
+                str = str..item
+            else
+                str = str..glue..item
+            end
         elseif type(item) == 'number' then
             str = str..glue..item
         else
             error("I don't know what to do with a "..type(item))
         end
+        last_item = item
     end
 
     return str
@@ -247,12 +314,15 @@ lisp.defglobal('=', core['='])
 lisp.defglobal('&', core['&'])
 lisp.defglobal('|', core['|'])
 lisp.defglobal('!', core['!'])
+lisp.defglobal('-', core['-'])
+lisp.defglobal('at', core['at'])
 lisp.defglobal('midi', core['midi'])
 lisp.defglobal('prop', core['prop'])
 lisp.defglobal('def', core['def'])
+lisp.defglobal('defk', core['defk'])
 lisp.defglobal('gdef', core['gdef'])
 lisp.defglobal('do', core['do'])
 lisp.defglobal('join', core['join'])
-lisp.defglobal('expr-to-s-list', core['expr-to-s-list'])
+lisp.defglobal('expr-to-sexpr', core['expr-to-sexpr'])
 
 return core
