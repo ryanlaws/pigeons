@@ -31,32 +31,19 @@ function setup_messages()
     message.identify('midi-remove-device')
 
     lisp.defglobal('menu-open', false)
+    lisp.defglobal('out-channel', 9) -- OT current track
     -- menus make clear the need to switch envs
     message.attach('btn', {'?',{'&',{'=',1,{'n'}},{'=',1,{'v'}}},
             {'gdef','menu-open',{'!',{'menu-open'}}}})
-    message.attach('midi', {'do',
-        -- {'print-expr',{'raw'}},
-        {'midi',6,{'raw'}}
-    })
-    -- message.attach('btn', {'?', {'&', {'=', 1, {'n'}}, {'=', 1, {'v'}}},
-    --         {'do', 
-    --             {'gdef', 'menu-open', {'!', {'menu-open'}}},
-    --             {'print-expr', {'smush', 'menu open: ', {'menu-open'}}}
-    --         }})
-    -- message.attach('btn', 'print-message')
-    -- message.attach('enc', 'print-message')
-
-    -- lisp.defglobal('last-num', '(nil)')
-    -- message.attach('enc', { 'do', 
-    --         {'print-expr', {'smush', "last number: ", {'last-num'}}},
-    --         {'gdef', 'last-num', {'value'}}})
-
-    -- message.attach('enc',
-    --     {'if',
-    --         {'=', 3, {'number'}},
-    --         {'print-expr', 'we got a THREE!'},
-    --         {'print-expr',
-    --             {'smush', "what's '", {'number'}, "' ?" }}})
+    message.attach('midi', 
+        {'?',{'=',{'ch'},16},
+            {'do',
+                {'defk','raw',1, 
+                    {'-', 
+                        {'at',{'raw'},1},
+                        {'-',16,{'out-channel'}}}},
+                {'midi',6,{'raw'}}}}
+    )
     
     -- all this MIDI stuff can proooobably get moved to the lib.
 
