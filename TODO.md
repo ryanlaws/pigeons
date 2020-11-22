@@ -1,4 +1,9 @@
 # TODO
+- [ ] MIDI convenience functions
+    - [ ] Channel-changing
+    - [ ] Message-mapping
+    - [ ] Hardware-lensing (for e.g. OT)
+- [ ] Use virtual MIDI ports instead of real IDs
 - [ ] Save and load .plisp.lua (poor man's sexpr) as listener
 - [ ] Implement octatrack MIDI library
 - [ ] Refactor everything to use Lisp as much as possible
