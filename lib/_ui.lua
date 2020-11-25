@@ -171,6 +171,14 @@ local midi_remove_device = function (m)
         ..s..(m.name or s)
 end
 
+local log_unknown = function(m) 
+    local s = ' '
+    -- return m['long-type']
+    return m.message_type 
+        ..s..(m.n or s)
+        ..s..(m.v or s)
+end
+
 local empty = function () return '' end
 
 _ui.message_to_string = function (m)
@@ -182,8 +190,7 @@ _ui.message_to_string = function (m)
         midi=midi_to_str,
         ['midi-add-device']=midi_add_device,
         ['midi-remove-device']=midi_remove_device,
-        unknown=function() return m.message_type end
-    })[fn_key] or fn.unknown
+    })[fn_key] or log_unknown
     return fn(m)
 end
 

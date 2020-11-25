@@ -1,5 +1,6 @@
 local m = {}
 
+-- these should both be env things
 m.logs = {}
 m.listeners = {}
     -- [ ] UI?
@@ -16,6 +17,11 @@ local spinner_index1 = 0
 local spinner_index2 = 0
 
 m.log = function (msg)
+    -- gross, but... yeah. this was the best place for now
+    if msg.message_type == 'midi' and msg.type == 'clock' then 
+        return 
+    end
+
     if #m.logs >= max_log_size then
         table.remove(m.logs, 1)
     end
@@ -29,11 +35,15 @@ m.log = function (msg)
 end
 
 -- may need responsibilities split somewhat
-m.transmit = function (message_type, msg)
-    -- getting time immediately is good for latency
+-- I'm legit making up origins as I go. hope that's not a problem lol.
+-- DON'T OVERTHINK IT, KID
+m.transmit = function (message_type, msg, origin)
+    -- getting time *immediately* is good for latency
     local now = util.time()
+
     msg.now = now
     msg.message_type = message_type
+    msg.origin = origin or msg.origin or "lua"
 
     if not message_type then
         utils.warn("message has no type, ignoring")
@@ -42,10 +52,14 @@ m.transmit = function (message_type, msg)
 
     local handlers = m.listeners[message_type]
     if not handlers then
-        utils.warn("message", message_type, "not identified, ignoring")
-        return false
+    -- nah, this is problematic for lensing
+    --    utils.warn("message", message_type, "not identified, ignoring")
+    --    return false
+        handlers = {}
     end
 
+    -- it might be good to bring your own env...
+    -- for inheritance, and stuff
     local env = lisp.make_env(msg)
 
     -- something feels off here

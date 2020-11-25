@@ -177,7 +177,7 @@ end
 core['tx'] = function(args, env)
     local message_type = lisp.exec(args[1], env)
     local msg = lisp.exec(args[2], env)
-    message.transmit(message_type, msg)
+    message.transmit(message_type, msg, "lisp")
 end
 
 
@@ -289,17 +289,6 @@ core['join'] = function(args, env)
     end
 
     return str
-end
-
--- eh, I don't know if we need this yet. 
--- was thinking it'd be good for menu text 
--- but idk if it handles line breaks.
-core['wrap-string'] = function(args, env)
-    if type(args) ~= 'table' then error('bad args') end
-    if type(args[1]) ~= 'string' then error('arg is not a table') end
-
-    -- TODO: implement (split into chunks, add line breaks, etc.)
-    return args[1]
 end
 
 -- stinky

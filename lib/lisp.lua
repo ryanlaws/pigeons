@@ -46,10 +46,10 @@ lisp.exec = function (expr, env)
     elseif type(expr) == 'number' then
         return expr
     elseif expr == nil then
-        utils.warn("nil expr. BYE!")
+        -- utils.warn("nil expr. BYE!")
         return expr
     elseif #expr == 0 then
-        utils.warn("empty or non-sequential expr. BYE!")
+        -- utils.warn("empty or non-sequential expr. BYE!")
         return expr
     end
 
@@ -66,7 +66,9 @@ lisp.exec = function (expr, env)
 
     local item = env[head]
     if item == nil then
-        error("env does not have '"..head.."'")
+        -- no. erroring is a bad idea. for example, clock doesn't have .ch. heh
+        -- error("env does not have '"..head.."'")
+        -- utils.warn("env does not have '"..head.."'")
         return nil -- uhhh, what else?
     elseif type(item) ~= 'function' then -- assuming string/number. what else...?
         -- for functions I think it's the same... but lazy.

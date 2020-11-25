@@ -1,7 +1,17 @@
-{
+return {
+    -- idk if long name will be used
+    ['long-name']="Elektron Octatrack",
+
+    -- probably nice as a prefix
+    ['short-name']="OT",
+
+    -- the implication is that this will be put in an environment.
+    -- but there are architectural issues with that at the moment.
+    -- so this is mostly aspirational.
     ['config']={
         ['default-channel']=9 -- auto channel
     },
+
     ['messages']={
         ['trig-audio-track']=
             {['type']='note', ['n']={['range']={1,8}, ['offset']=23}},
@@ -100,11 +110,11 @@
 
         ['midi-mute']=
             {['type']='cc', 
-                ['n']={'name'='track','range'={1,8},'offset'=111}, 
-                ['v']={'name'='muted','range'={0,1}}},
+                ['n']={['name']='track',['range']={1,8},['offset']=111}, 
+                ['v']={['name']='muted',['range']={0,1}}},
         ['midi-solo']=
             {['type']='cc', 
-                ['n']={'name'='track','range'={1,8},'offset'=119}, 
-                ['v']={'name'='soloed','range'={0,1}}},
+                ['n']={['name']='track',['range']={1,8},['offset']=119}, 
+                ['v']={['name']='soloed',['range']={0,1}}},
     }
 }

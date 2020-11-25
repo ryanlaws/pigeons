@@ -8,6 +8,9 @@ lisp = include('lib/lisp')
 core = include('lib/core')
 message = include('lib/message')
 
+-- lenses
+octatrack = include('midi-lens/octatrack')
+
 -- TODO: add debug mode to toggle logging. it's noisy
 
 -- TODO: change this to env creation + reset
@@ -16,6 +19,7 @@ message = include('lib/message')
 function init()
     setup_messages()
     _midi.init()
+    _midi.add_lens(6, octatrack) -- must happen AFTER midi init
     redraw_clock_id = clock.run(_ui.redraw_clock)
 end
 
@@ -49,6 +53,7 @@ function setup_messages()
 
     -- this doesn't actually do anything... unless you plug/unplug stuff
     message.attach('midi-add-device', {'print-table', {'env'}})
+
 end
 
 -- can enc/key be defined in a lib? I don't see why not...
@@ -57,11 +62,11 @@ end
 -- 'enc' is terse but maybe confusing
 -- 'key' is definitely confusing alongside HID (keyboard)
 function enc(n, v)
-    message.transmit('enc', { n=n, v=v })
+    message.transmit('enc', { n=n, v=v }, 'panel')
 end
 
 function key(n, v)
-    message.transmit('btn', { n=n, v=v })
+    message.transmit('btn', { n=n, v=v }, 'panel')
 end
 
 function redraw()
