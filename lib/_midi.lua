@@ -75,7 +75,13 @@ _midi.add_lens = function(id, lens_def)
             return fallback(raw) 
         end
 
-        local n_offset = spec.n.offset or 0
+        local n_offset = 0
+        if type(spec.n) == 'number' then
+            n_offset = 0
+        elseif spec.n.offset then
+            n_offset = spec.n.offset
+        end
+
         local n = raw[2] - n_offset
 
         local v_offset = (spec.v and spec.v.offset) or 0
@@ -118,7 +124,7 @@ local function connect_device(id, name)
     -- TODO: check condition outside, not on each event.
     -- can have one handler for the whole lens, so nbd.
     -- this is "default" - can reassign as needed
-    print('attaching midi device '..id..' to default handler')
+    -- print('attaching midi device '..id..' to default handler')
     midi.devices[id].event = _midi.make_tx_basic(id, name)
     dev_names[id] = name
 end
