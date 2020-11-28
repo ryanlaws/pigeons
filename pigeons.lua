@@ -19,7 +19,7 @@ octatrack = include('midi-lens/octatrack')
 function init()
     setup_messages()
     _midi.init()
-    _midi.add_lens(6, octatrack) -- must happen AFTER midi init
+    _midi.add_lens(2, octatrack) -- must happen AFTER midi init
     redraw_clock_id = clock.run(_ui.redraw_clock)
 end
 

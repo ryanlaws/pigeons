@@ -57,7 +57,13 @@ _midi.add_lens = function(id, lens_def)
 
     -- attach handler
     local fallback = _midi.make_tx_basic(id, dev_names[id])
-    print('attaching midi device '..id..' to lens '..lens_def['long-name'])
+    print('preparing to attach midi device '..id
+        ..' to lens '..lens_def['long-name'])
+
+    if not midi.devices[id] then
+        utils.warn('device id '..(id or nil).." nonexistent; won't lens.")
+        return
+    end
 
     midi.devices[id].event = function (raw)
         local msg = midi.to_msg(raw)
@@ -89,8 +95,8 @@ _midi.add_lens = function(id, lens_def)
 
         message.transmit(spec.message_type, { n=n, v=v }, 'midi')
     end
-    print('attached midi device '..id..' to lens '
-        ..lens_def['long-name']..' ...maybe?')
+    print('attached midi device '..(id or '(nil)')..' to lens '
+        ..((lens_def and lens_def['long-name']) or '(nil)')..' ...maybe?')
     -- ...I'll clean it up later. maybe.
 end
 
