@@ -76,6 +76,27 @@ core['-'] = function (args, env)
     return result
 end
 
+core['+'] = function (args, env)
+    local result = lisp.exec(args[1], env)
+    for i=2,#args do
+        result = result + lisp.exec(args[i], env)
+    end
+    return result
+end
+
+core['%'] = function (args, env)
+    print('oh hi '..#args..':')
+
+    local num = lisp.exec(args[1], env)
+    local denom = lisp.exec(args[2], env)
+
+    -- TODO: validate:
+    -- - num and denom should be numbers
+    -- - denom should not be 0 (or negative?)
+
+    return num % denom
+end
+
 -- TODO: move to _midi somehow
 -- TODO: use vports to find device
 core['midi'] = function (args, env)
@@ -304,6 +325,8 @@ lisp.defglobal('&', core['&'])
 lisp.defglobal('|', core['|'])
 lisp.defglobal('!', core['!'])
 lisp.defglobal('-', core['-'])
+lisp.defglobal('+', core['+'])
+lisp.defglobal('%', core['%'])
 lisp.defglobal('at', core['at'])
 lisp.defglobal('midi', core['midi'])
 lisp.defglobal('prop', core['prop'])
