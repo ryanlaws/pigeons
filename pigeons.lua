@@ -21,7 +21,7 @@ function init()
     _midi.init()
     -- TODO: attach by NAME which is more stable
     -- TODO: do all this in CONFIG. this whole file is really CONFIG
-    _midi.add_lens(2, octatrack) -- must happen AFTER midi init
+    _midi.add_lens(2, octatrack, {1,2,3,4,5,6,7,8,9}) -- must happen AFTER midi init
     redraw_clock_id = clock.run(_ui.redraw_clock)
 end
 
@@ -47,12 +47,12 @@ function setup_messages()
     message.attach('midi', 
         {'?',{'=',{'ch'},16},
             {'do',
-                {'defk','raw',1, 
+                {'def@','raw',1, 
                     {'-', 
                         {'at',{'raw'},1},
                         {'-',16,{'out-channel'}}}},
                 {'midi',2,{'raw'}},
-                {'print-expr', {'+', {'robin-counter'}, {'robin-offset'}}},
+                -- {'print-expr', {'+', {'robin-counter'}, {'robin-offset'}}},
                 {'midi',{'+', {'robin-counter'}, {'robin-offset'}},{'raw'}},
                 {'gdef', 
                     'robin-counter', 

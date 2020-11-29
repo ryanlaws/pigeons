@@ -85,8 +85,6 @@ core['+'] = function (args, env)
 end
 
 core['%'] = function (args, env)
-    print('oh hi '..#args..':')
-
     local num = lisp.exec(args[1], env)
     local denom = lisp.exec(args[2], env)
 
@@ -147,7 +145,7 @@ end
 
 -- this is kinda tacky.
 -- we want something that copies the table and redefines in the copy.
-core['defk'] = function(args, env)
+core['def@'] = function(args, env)
     if type(args[1]) ~= 'string' then
         error("def name is not a string, what the heck dude?")
         return nil
@@ -331,7 +329,7 @@ lisp.defglobal('at', core['at'])
 lisp.defglobal('midi', core['midi'])
 lisp.defglobal('prop', core['prop'])
 lisp.defglobal('def', core['def'])
-lisp.defglobal('defk', core['defk'])
+lisp.defglobal('def@', core['def@'])
 lisp.defglobal('gdef', core['gdef'])
 lisp.defglobal('do', core['do'])
 lisp.defglobal('join', core['join'])

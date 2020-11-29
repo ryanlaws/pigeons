@@ -4,23 +4,18 @@ local dev_names = {}
 local lenses = {}
 
 -- TODO: split lens code out... probably
-
-_midi.add_lens = function(id, lens_def)
+_midi.add_lens = function(id, lens_def, lens_channels)
     -- use config to set defaults, etc.
     -- for each message type:
         -- attach MIDI rx to tx lens message
         -- attach lens message rx to tx MIDI
 
-    --[[
-        how to compensate for feedback?
-        - add & check e.g. "origin" to message?
-        - use special handlers to avoid midi tx?
-        - "from"/"to" message prefixes?
-        I think "origin" is the one, could be:
-        - midi
-        - lisp
-        - lua
-    --]]
+    -- there's gotta be a less gross way of doing this, heh
+    local lens_channels = lens_channels or {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
+    local channels = {}
+    for i=1,#lens_channels do
+        channels[lens_channels[i]] = true
+    end
 
     -- this is so cheesy it hurts but yagni, etc.
     local channel = lens_def.config['default-channel']
@@ -70,6 +65,12 @@ _midi.add_lens = function(id, lens_def)
 
         if msg.type == 'clock' then return end -- no thanks, not right now.
 
+        -- pretty tacky. can't toggle lensing of non-channeled messages. 
+        if msg.ch and (not channels[msg.ch]) then
+            -- print('channel '..msg.ch..' is not lensed')
+            return fallback(raw)
+        end
+
         local lookup_type = msg.type
         if (lookup_type == 'note_off') or (lookup_type == 'note_on') then
             lookup_type = 'note'
@@ -77,7 +78,7 @@ _midi.add_lens = function(id, lens_def)
 
         local spec = (lens[lookup_type] or {})[raw[2]] or nil
         if spec == nil then 
-            print('nil spec!')
+            -- print('nil spec!') -- real noisy
             return fallback(raw) 
         end
 
