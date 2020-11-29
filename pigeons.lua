@@ -19,6 +19,8 @@ octatrack = include('midi-lens/octatrack')
 function init()
     setup_messages()
     _midi.init()
+    -- TODO: attach by NAME which is more stable
+    -- TODO: do all this in CONFIG. this whole file is really CONFIG
     _midi.add_lens(2, octatrack) -- must happen AFTER midi init
     redraw_clock_id = clock.run(_ui.redraw_clock)
 end
@@ -35,6 +37,9 @@ function setup_messages()
     message.identify('midi-remove-device')
 
     lisp.defglobal('menu-open', false)
+    lisp.defglobal('robin-counter', 0)
+    lisp.defglobal('robin-counter-mod', 6)
+    lisp.defglobal('robin-offset', 3)
     lisp.defglobal('out-channel', 9) -- OT current track
     -- menus make clear the need to switch envs
     message.attach('btn', {'?',{'&',{'=',1,{'n'}},{'=',1,{'v'}}},
@@ -46,7 +51,15 @@ function setup_messages()
                     {'-', 
                         {'at',{'raw'},1},
                         {'-',16,{'out-channel'}}}},
-                {'midi',6,{'raw'}}}}
+                {'midi',2,{'raw'}},
+                {'print-expr', {'+', {'robin-counter'}, {'robin-offset'}}},
+                {'midi',{'+', {'robin-counter'}, {'robin-offset'}},{'raw'}},
+                {'gdef', 
+                    'robin-counter', 
+                    {'%', 
+                        {'+', {'robin-counter'}, 1}, 
+                        {'robin-counter-mod'}}}
+            }}
     )
     
     -- all this MIDI stuff can proooobably get moved to the lib.
