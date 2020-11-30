@@ -39,6 +39,9 @@ lisp.make_env = function (new_env)
     return env
 end
 
+-- TODO: return exec() w/o needing env arg
+--   it's getting tedious to pass it around EVERYWHERE
+--   also, a metatable parental chain of env would make mode/event envs easier
 -- should creating an environment give us an exec() as well?
 lisp.exec = function (expr, env) 
     if type(expr) == 'string' then
@@ -67,8 +70,8 @@ lisp.exec = function (expr, env)
     local item = env[head]
     if item == nil then
         -- no. erroring is a bad idea. for example, clock doesn't have .ch. heh
-        -- error("env does not have '"..head.."'")
-        -- utils.warn("env does not have '"..head.."'")
+        -- error("env does not have '"..head.."'") -- just no.
+        -- utils.warn("env does not have '"..head.."'") -- very chatty - bad.
         return nil -- uhhh, what else?
     elseif type(item) ~= 'function' then -- assuming string/number. what else...?
         -- for functions I think it's the same... but lazy.

@@ -1,13 +1,13 @@
 # TODO
+- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
+- [ ] Collate TODOs from code
+- [ ] Load configuration from file
+    - [ ] Save and load .plisp.lua (poor man's sexpr) as listener
+    - [ ] Use named ports (e.g. Faderfox/Launchpad) when available
+    - [ ] Use virtual MIDI ports instead of real IDs
 - [ ] MIDI convenience functions
     - [ ] Channel-changing
     - [ ] Message-mapping
-- [ ] MIDI-lensing (for e.g. OT)
-    - [x] OT lens definition
-    - [x] Input (MIDI from external devices)
-    - [ ] Output (MIDI to external devices)
-- [ ] Use virtual MIDI ports instead of real IDs
-- [ ] Save and load .plisp.lua (poor man's sexpr) as listener
 - [ ] Refactor everything to use Lisp as much as possible
 - [ ] Real Lisp
     - [ ] Persist expressions as strings
@@ -23,6 +23,7 @@
 - [ ] Implement message throttling
     - [ ] Timers/clocks
     - [ ] Execution context (like closure env) - may need IDs, etc.
+- [ ] Add engine support
 
 # DONE
 - [x] Implement (basic) MIDI output handlers
@@ -45,4 +46,7 @@
         - [x] Utils
         - [x] Core
 - [x] Remove the stupid helixes var
-
+- [x] MIDI-lensing (for e.g. OT)
+    - [x] OT lens definition
+    - [x] Input (MIDI from external devices)
+    - [x] Output (MIDI to external devices)

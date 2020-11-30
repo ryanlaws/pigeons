@@ -12,6 +12,12 @@ return {
         ['default-channel']=9 -- auto channel
     },
 
+    -- this syntax feels a bit tedious to me.
+    -- nesting would be cool - good for editing on norns' screen.
+    -- so would a "note" helper to replace type=note.
+    -- and I think range/offset could be optimized but idk how.
+    -- also modal aliases would be cool.
+    -- for example, the track fx could instead be delay-specific.
     ['messages']={
         ['trig-audio-track']=
             {['type']='note', ['n']={['range']={1,8}, ['offset']=23}},

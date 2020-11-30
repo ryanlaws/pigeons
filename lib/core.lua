@@ -35,6 +35,22 @@ core['='] = function (args, env)
     return lisp.exec(args[1], env) == lisp.exec(args[2], env)
 end
 
+core['>'] = function (args, env)
+    return lisp.exec(args[1], env) > lisp.exec(args[2], env)
+end
+
+core['<'] = function (args, env)
+    return lisp.exec(args[1], env) < lisp.exec(args[2], env)
+end
+
+core['>='] = function (args, env)
+    return lisp.exec(args[1], env) >= lisp.exec(args[2], env)
+end
+
+core['<='] = function (args, env)
+    return lisp.exec(args[1], env) <= lisp.exec(args[2], env)
+end
+
 core['!'] = function (args, env)
     return not lisp.exec(args[1], env)
 end
@@ -134,11 +150,14 @@ core['def'] = function(args, env)
     if type(args[1]) ~= 'string' then
         error("def name is not a string, what the heck dude?")
         return nil
-    elseif args[2] ~= nil then
+    end
+
+    local result = lisp.exec(args[2], env)
+    if result == nil then
         utils.warn("what's the point of defining "..args[1].." as (nil)?")
     end
 
-    return env[args[1]] == args[2]
+    env[args[1]] = result
     -- do we care if we're re-defining an existing name?
     -- nah, not yet. REASONS TO CARE NEEDED
 end
@@ -199,6 +218,17 @@ core['tx'] = function(args, env)
     message.transmit(message_type, msg, "lisp")
 end
 
+core['pairs'] = function(args, env)
+    -- print('in pairs with '..#args..' args.')
+    local t = {}
+    for i=1,#args,2 do
+        local key = lisp.exec(args[i], env)
+        -- print('setting '..key)
+        local value = lisp.exec(args[i + 1], env)
+        t[key] = value
+    end
+    return t
+end
 
 core['expr-to-sexpr'] = function(args, env, list)
     if type(args) ~= 'table' then error('bad args') end
@@ -230,7 +260,7 @@ core['expr-to-sexpr'] = function(args, env, list)
     return list
 end
 
-core['at'] = function(args, env)
+core['@'] = function(args, env)
     if type(args) ~= 'table' or #args < 2 then 
         error('bad args - not table or empty table') 
     end
@@ -239,16 +269,21 @@ core['at'] = function(args, env)
     local key = lisp.exec(args[2], env)
 
     if type(table) ~= 'table' then 
-        error('.at arg[1] is not a table') 
+        error('.@ arg[1] is not a table') 
     end
 
     -- in fact lua accepts anything besides nil
     -- but what's useful besides string and number?
     if (type(key) ~= 'string') and (type(key) ~= 'number') then 
-        error('.at arg[2] is not a string or number') 
+        error('.@ arg[2] is not a string or number') 
     end
 
     return table[key]
+end
+
+-- I may have implemented this elsewhere... ugh
+core['lit'] = function (args, env)
+    return args[1]
 end
 
 -- having both of these separate is probably only useful w/ currying
@@ -263,11 +298,11 @@ core['of'] = function(args, env)
     -- in fact lua accepts anything besides nil
     -- but what's useful besides string and number?
     if (type(key) ~= 'string') or (type(key) ~= 'number') then 
-        error('.at arg[1] is not a string or number') 
+        error('.of arg[1] is not a string or number') 
     end
 
     if type(table) ~= 'table' then 
-        error('.at arg[2] is not a table') 
+        error('.of arg[2] is not a table') 
     end
 
     return table[key]
@@ -312,6 +347,7 @@ end
 
 -- stinky
 -- could probably just iterate over all these keys
+-- I keep forgetting to add these lol. probably a sign that I should iterate...
 lisp.defglobal('print-message', core['print-message'])
 lisp.defglobal('print-expr', core['print-expr'])
 lisp.defglobal('print-table', core['print-table'])
@@ -319,13 +355,18 @@ lisp.defglobal('smush', core['smush'])
 lisp.defglobal('env', core['env'])
 lisp.defglobal('?', core['?'])
 lisp.defglobal('=', core['='])
+lisp.defglobal('>', core['>'])
+lisp.defglobal('<', core['<'])
+lisp.defglobal('>=', core['>='])
+lisp.defglobal('<=', core['<='])
 lisp.defglobal('&', core['&'])
 lisp.defglobal('|', core['|'])
 lisp.defglobal('!', core['!'])
 lisp.defglobal('-', core['-'])
 lisp.defglobal('+', core['+'])
 lisp.defglobal('%', core['%'])
-lisp.defglobal('at', core['at'])
+lisp.defglobal('lit', core['lit'])
+lisp.defglobal('@', core['@'])
 lisp.defglobal('midi', core['midi'])
 lisp.defglobal('prop', core['prop'])
 lisp.defglobal('def', core['def'])
@@ -333,6 +374,8 @@ lisp.defglobal('def@', core['def@'])
 lisp.defglobal('gdef', core['gdef'])
 lisp.defglobal('do', core['do'])
 lisp.defglobal('join', core['join'])
+lisp.defglobal('tx', core['tx'])
+lisp.defglobal('pairs', core['pairs'])
 lisp.defglobal('expr-to-sexpr', core['expr-to-sexpr'])
 
 return core

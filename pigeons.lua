@@ -44,7 +44,7 @@ function setup_messages()
     -- menus make clear the need to switch envs
     message.attach('btn', {'?',{'&',{'=',1,{'n'}},{'=',1,{'v'}}},
             {'gdef','menu-open',{'!',{'menu-open'}}}})
-    message.attach('midi', 
+    --[[ message.attach('midi', 
         {'?',{'=',{'ch'},16},
             {'do',
                 {'def@','raw',1, 
@@ -60,7 +60,29 @@ function setup_messages()
                         {'+', {'robin-counter'}, 1}, 
                         {'robin-counter-mod'}}}
             }}
-    )
+    ) ]]
+
+    -- 
+    message.attach('midi', {'do', 
+        {'?', {'&', 
+                {'=',{'ch'},16},
+                {'=',{'type'},'note_on'},
+                {'>=',{'@',{'raw'},2},8},
+                {'<=',{'@',{'raw'},2},15},
+            },
+            {'do',
+                {'def', 'delay-value', {'@', 
+                    {'lit', {7, 15, 23, 31, 47, 63, 95, 127}},
+                    {'-', {'@', {'raw'}, 2}, 7}, 
+                }},
+                -- {'print-expr', {'smush', 'delay value:', {'delay-value'}}},
+                {'tx', 'track-fx2', {'pairs', 'n', 1, 'v', {'delay-value'}}}
+        -- ['track-fx2']=
+        --     {['type']='cc', ['n']={['range']={1,6}, ['offset']=39}},
+                -- {'tx', }
+            }},
+        -- {'print-expr', {'smush', 'channel: ', {'type'}}}
+    })
     
     -- all this MIDI stuff can proooobably get moved to the lib.
 

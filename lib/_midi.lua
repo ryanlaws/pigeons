@@ -2,13 +2,24 @@ local _midi = {}
 
 local dev_names = {}
 local lenses = {}
+local lensed_ports = {}
+
+local lens_to_midi_defined = false
 
 -- TODO: split lens code out... probably
-_midi.add_lens = function(id, lens_def, lens_channels)
+_midi.add_lens = function(port_id, lens_def, lens_channels)
     -- use config to set defaults, etc.
     -- for each message type:
         -- attach MIDI rx to tx lens message
         -- attach lens message rx to tx MIDI
+
+    -- ugly ugly ugly. pull these apart, use DI, whatever.
+
+    if not lens_to_midi_defined then
+        print('defining lens-to-midi')
+        lisp.defglobal('lens-to-midi', _midi['lens_to_midi'])
+        lens_to_midi_defined = true
+    end
 
     -- there's gotta be a less gross way of doing this, heh
     local lens_channels = lens_channels or {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}
@@ -23,6 +34,8 @@ _midi.add_lens = function(id, lens_def, lens_channels)
 
     -- prep a table for easy lookup
     local lens = {}
+
+    -- iterate over all messages
     for msg_type, spec in pairs(lens_def.messages) do
         if not lens[spec.type] then lens[spec.type] = {} end
 
@@ -30,6 +43,7 @@ _midi.add_lens = function(id, lens_def, lens_channels)
         -- probably better to copy
         spec.message_type = msg_type
 
+        -- add the spec to the table under the key
         if type(spec.n) == 'number' then
             if lens[spec.type][spec.n] then
                 error("already got lens["..spec.type
@@ -48,19 +62,29 @@ _midi.add_lens = function(id, lens_def, lens_channels)
         else
             error("your spec doesn't have an .n, bud")
         end
+
+        -- attach a message listener for that type
+        -- TODO: make lenses work w/ multiple devices
+        -- I really wanna implement this in lisp but it's not time yet :(
+        -- also... how does this get the port? heh
+        message.attach(msg_type, {'lens-to-midi', port_id, short_name })
     end
 
-    -- attach handler
-    local fallback = _midi.make_tx_basic(id, dev_names[id])
-    print('preparing to attach midi device '..id
+    -- seems to be the point where all the errors would've been thrown
+    lenses[short_name] = lens_def
+
+    -- attach handler to MIDI event
+    local fallback = _midi.make_tx_basic(port_id, dev_names[port_id])
+    print('preparing to attach midi device '..port_id
         ..' to lens '..lens_def['long-name'])
 
-    if not midi.devices[id] then
-        utils.warn('device id '..(id or nil).." nonexistent; won't lens.")
+    if not midi.devices[port_id] then
+        utils.warn('device port_id '..(port_id or nil).." nonexistent; won't lens.")
         return
     end
 
-    midi.devices[id].event = function (raw)
+    -- kind of a beast! pull it out and put it somewhere better...
+    midi.devices[port_id].event = function (raw)
         local msg = midi.to_msg(raw)
 
         if msg.type == 'clock' then return end -- no thanks, not right now.
@@ -96,13 +120,135 @@ _midi.add_lens = function(id, lens_def, lens_channels)
 
         message.transmit(spec.message_type, { n=n, v=v }, 'midi')
     end
-    print('attached midi device '..(id or '(nil)')..' to lens '
+    print('attached midi device '..(port_id or '(nil)')..' to lens '
         ..((lens_def and lens_def['long-name']) or '(nil)')..' ...maybe?')
     -- ...I'll clean it up later. maybe.
 end
 
+_midi.lens_to_midi = function (args, env)
+    -- print("message_type = "..env.message_type)
+    -- print("origin = "..env.origin)
+    -- print("n = "..env.n)
+    -- print("v = "..env.v)
+
+    -- it's pretty tacky to assume "n" or "v" I guess
+    -- it should really depend on the MIDI msg type being lensed
+    if (not env.n) or (not env.v) or (type(env.message_type) ~= 'string') then
+        error('malformed lens message')
+    end
+
+    local msg_type = env.message_type
+    local msg_n = env.n
+    local msg_v = env.v
+
+    local port_id = args[1]
+    local lens_name = args[2]
+    if type(port_id) ~= 'number' then
+        error('port_id aint a number')
+    end
+
+    if type(lens_name) ~= 'string' then
+        error('lens_name aint a string')
+    end
+
+    if not lenses[lens_name] then
+        error('no lens called '..lens_name)
+    end
+
+    lens = lenses[lens_name]
+
+    if not lens.messages then
+        error('\nsomething wrong with yr lens')
+    end
+
+    local msg = lens.messages[msg_type]
+    if not msg then
+        error('\nlens doesnt have a message '..msg_type)
+    end
+
+    local midi_type = msg.type
+    if not midi_type then
+        error('\nlens '..lens_name..' message def '..msg_type
+            ..' is missing MIDI message type')
+    elseif midi_type == 'note' then
+        midi_type = v == 0 and 'note_off' or 'note_on'
+    end
+
+    local midi_n = msg.n
+    if type(midi_n) == 'table' then
+        if (type(msg.n.range[1]) ~= 'number') 
+            or (type(msg.n.range[2]) ~= 'number') 
+            or (msg.n.range[1] >= msg.n.range[2]) 
+        then
+            error('bad n range')
+        end
+
+        midi_n = util.clamp(env.n, msg.n.range[1], msg.n.range[2])
+
+        if type(msg.n.offset) ~= 'number' then
+            error('bad n offset (type '..type(msg.offset)..')')
+        end
+        midi_n = midi_n + msg.n.offset
+    elseif midi_n == nil then
+        midi_n = env.n
+    end
+
+    if type(midi_n) ~= 'number' then
+        error('could not get a decent n value')
+    end
+
+    midi_n = util.clamp(midi_n, 0, 127)
+
+    local midi_v = msg.v
+
+    if type(midi_v) == 'table' then
+        if (type(msg.v.range[1]) ~= 'number') 
+            or (type(msg.v.range[2]) ~= 'number') 
+            or (msg.v.range[1] >= msg.v.range[2]) 
+        then
+            error('bad v range')
+        end
+        midi_v = util.clamp(env.v, msg.v.range[1], msg.v.range[2])
+
+        if type(msg.v.offset) ~= 'number' then
+            error('bad v offset (type '..type(msg.v.offset)..')')
+        end
+        midi_v = midi_v + msg.v.offset
+    elseif midi_v == nil then
+        midi_v = env.v
+    end
+
+    if type(midi_v) ~= 'number' then
+        error('could not get a decent n value')
+    end
+
+    midi_v = util.clamp(midi_v, 0, 127)
+
+
+    local device = type(port_id) == 'number' and midi.devices[port_id] or nil
+    if device == nil then 
+        error("bogus MIDI device ID!")
+    end
+
+    if type(device[midi_type]) ~= 'function' then
+        error(midi_type..' does not appear to be a valid MIDI message type')
+    end
+
+    -- TODO: allow assigning other channels, either by spec or env
+    local channel = lens.config['default-channel']
+
+    device[midi_type](device, midi_n, midi_v, channel)
+
+    -- TODO: implement non-channeled message types
+
+
+    -- device:send(lisp.exec(args[2], env))
+
+    -- and now we get to work
+end
+
 local function is_lensed (id)
-    return lenses[id] ~= nil
+    return lensed_ports[id] ~= nil
 end
 
 local function tx_lens_event (event)
