@@ -100,6 +100,22 @@ core['+'] = function (args, env)
     return result
 end
 
+core['/'] = function (args, env)
+    local result = lisp.exec(args[1], env)
+    for i=2,#args do
+        result = result / lisp.exec(args[i], env)
+    end
+    return result
+end
+
+core['*'] = function (args, env)
+    local result = lisp.exec(args[1], env)
+    for i=2,#args do
+        result = result * lisp.exec(args[i], env)
+    end
+    return result
+end
+
 core['%'] = function (args, env)
     local num = lisp.exec(args[1], env)
     local denom = lisp.exec(args[2], env)
@@ -364,6 +380,8 @@ lisp.defglobal('|', core['|'])
 lisp.defglobal('!', core['!'])
 lisp.defglobal('-', core['-'])
 lisp.defglobal('+', core['+'])
+lisp.defglobal('/', core['/'])
+lisp.defglobal('*', core['*'])
 lisp.defglobal('%', core['%'])
 lisp.defglobal('lit', core['lit'])
 lisp.defglobal('@', core['@'])

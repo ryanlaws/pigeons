@@ -197,7 +197,7 @@ _midi.lens_to_midi = function (args, env)
         error('could not get a decent n value')
     end
 
-    midi_n = util.clamp(midi_n, 0, 127)
+    midi_n = util.clamp(math.ceil(midi_n), 0, 127)
 
     local midi_v = msg.v
 
@@ -222,8 +222,7 @@ _midi.lens_to_midi = function (args, env)
         error('could not get a decent n value')
     end
 
-    midi_v = util.clamp(midi_v, 0, 127)
-
+    midi_v = util.clamp(math.ceil(midi_v), 0, 127)
 
     local device = type(port_id) == 'number' and midi.devices[port_id] or nil
     if device == nil then 

@@ -62,27 +62,40 @@ function setup_messages()
             }}
     ) ]]
 
-    -- 
-    message.attach('midi', {'do', 
-        {'?', {'&', 
-                {'=',{'ch'},16},
-                {'=',{'type'},'note_on'},
-                {'>=',{'@',{'raw'},2},8},
-                {'<=',{'@',{'raw'},2},15},
-            },
+    --[[
+        beat repeat:
+            - notes 8-15: delay divisions (1/16 - 1/2 with triplets)
+            - CC 15: 0 = dry, no feedback. 127 = full wet/feedback (looper)
+    ]]
+    message.attach('midi', 
+        {'?', {'=',{'ch'},16},
             {'do',
-                {'def', 'delay-value', {'@', 
-                    {'lit', {7, 15, 23, 31, 47, 63, 95, 127}},
-                    {'-', {'@', {'raw'}, 2}, 7}, 
-                }},
-                -- {'print-expr', {'smush', 'delay value:', {'delay-value'}}},
-                {'tx', 'track-fx2', {'pairs', 'n', 1, 'v', {'delay-value'}}}
-        -- ['track-fx2']=
-        --     {['type']='cc', ['n']={['range']={1,6}, ['offset']=39}},
-                -- {'tx', }
-            }},
-        -- {'print-expr', {'smush', 'channel: ', {'type'}}}
-    })
+                {'?', {'&', 
+                        {'=',{'type'},'note_on'},
+                        {'>=',{'@',{'raw'},2},8},
+                        {'<=',{'@',{'raw'},2},15},
+                    },
+                    {'do',
+                        {'def', 'delay-value', {'@', 
+                            {'lit', {7, 15, 23, 31, 47, 63, 95, 127}},
+                            {'-', {'@', {'raw'}, 2}, 7}, 
+                        }},
+                        {'tx', 'track-fx2', {'pairs', 'n', 1, 'v', {'delay-value'}}}}},
+                {'?', {'&',
+                        {'=',{'type'},'cc'},
+                        {'=',{'@',{'raw'},2},15}
+                    },
+                    {'do',
+                        {'def','v',{'@',{'raw'},3}}, -- might already happen?
+                        {'tx', 'track-ampparam', {'pairs', 'n', 4, 'v', 
+                            {'/',{'-', 127, {'v'}}, 2}
+                        }},
+                        {'tx', 'track-fx2', {'pairs', 'n', 2, 'v', {'v'}}},
+                        {'tx', 'track-fx2', {'pairs', 'n', 3, 'v', {'v'}}},
+                    }
+                }
+            }
+        })
     
     -- all this MIDI stuff can proooobably get moved to the lib.
 
