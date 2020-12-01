@@ -6,7 +6,8 @@
 - [ ] Poor man's sexpr save/load
 (POINT OF MVP USEFULNESS)
 - [ ] Persistent display of control values, not just logging
-- [ ] Real sexpr parsing and persistence
+- [ ] Real sexpr persistence
+- [x] Real sexpr parsing
 - [ ] Mode-level environments
 - [ ] Event recording (technically already possible... sorta)
 - [ ] Event filtering

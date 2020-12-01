@@ -1,18 +1,19 @@
 # TODO
-- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
-- [ ] Collate TODOs from code
+- [ ] Real Lisp
+    - [x] Parse sexprs into AST tables 
+    - [ ] Persist AST tables as sexprs
 - [ ] Load configuration from file
-    - [ ] Save and load .plisp.lua (poor man's sexpr) as listener
+    - [x] Load .plisp as listener implementation
+    - [ ] Assign .plisp via config
     - [ ] Use named ports (e.g. Faderfox/Launchpad) when available
     - [ ] Use virtual MIDI ports instead of real IDs
 - [ ] MIDI convenience functions
     - [ ] Channel-changing
     - [ ] Message-mapping
+- [ ] Refactor exec to create child envs
+- [ ] Collate TODOs from code
+- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
 - [ ] Refactor everything to use Lisp as much as possible
-- [ ] Real Lisp
-    - [ ] Persist expressions as strings
-    - [ ] Parse strings into expressions 
-- [ ] Implement persistent modal environments
 - [ ] Implement UI
     - [ ] Visual (keyboard-free) expression editor
     - [ ] Message "learn" (like MIDI learn)
