@@ -1,5 +1,7 @@
 local utils = {}
 
+local base_script_path = '/home/we/dust/code/pigeons/scripts/'
+
 utils.tail = function (t, start)
     start = start or 2
     if type(t) ~= 'table' or #t == 0 then return {} end
@@ -50,6 +52,30 @@ utils.table_to_string = function (table, depth)
         end
     end
     return str..indent..'}'
+end
+
+utils.load_lisp_file = function (filename)
+    local file = io.open(base_script_path..filename, 'r')
+    io.input(file)
+    local contents = io.read('*all')
+    
+    -- wrap words in single quotes (end w/ digit(s) is OK)
+    contents = string.gsub(contents, '([^%(%)0-9%s][^%(%)%s]*)', "'%0'")
+    -- parens to curlies
+    contents = string.gsub(contents, '%(', '{')
+    contents = string.gsub(contents, '%)', '}')
+    -- contiguous whitespace to single comma
+    contents = string.gsub(contents, '%s+', ',')
+    
+    local fn, err = load('return '..contents)
+    if err then
+        io.close()
+        error("error loading "..filename..":\n"..err)
+    end
+
+    local table = fn()
+    io.close()
+    return table
 end
 
 return utils
