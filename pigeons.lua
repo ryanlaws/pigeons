@@ -67,35 +67,8 @@ function setup_messages()
             - notes 8-15: delay divisions (1/16 - 1/2 with triplets)
             - CC 15: 0 = dry, no feedback. 127 = full wet/feedback (looper)
     ]]
-    message.attach('midi', 
-        {'?', {'=',{'ch'},16},
-            {'do',
-                {'?', {'&', 
-                        {'=',{'type'},'note_on'},
-                        {'>=',{'@',{'raw'},2},8},
-                        {'<=',{'@',{'raw'},2},15},
-                    },
-                    {'do',
-                        {'def', 'delay-value', {'@', 
-                            {'lit', {7, 15, 23, 31, 47, 63, 95, 127}},
-                            {'-', {'@', {'raw'}, 2}, 7}, 
-                        }},
-                        {'tx', 'track-fx2', {'pairs', 'n', 1, 'v', {'delay-value'}}}}},
-                {'?', {'&',
-                        {'=',{'type'},'cc'},
-                        {'=',{'@',{'raw'},2},15}
-                    },
-                    {'do',
-                        {'def','v',{'@',{'raw'},3}}, -- might already happen?
-                        {'tx', 'track-ampparam', {'pairs', 'n', 4, 'v', 
-                            {'/',{'-', 127, {'v'}}, 2}
-                        }},
-                        {'tx', 'track-fx2', {'pairs', 'n', 2, 'v', {'v'}}},
-                        {'tx', 'track-fx2', {'pairs', 'n', 3, 'v', {'v'}}},
-                    }
-                }
-            }
-        })
+    local midi_script = utils.load_lisp_file('ot-beat-repeat.plisp')
+    message.attach('midi', midi_script)
     
     -- all this MIDI stuff can proooobably get moved to the lib.
 
