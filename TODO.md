@@ -7,9 +7,11 @@
     - [ ] Assign .plisp via config
     - [ ] Use named ports (e.g. Faderfox/Launchpad) when available
     - [ ] Use virtual MIDI ports instead of real IDs
-- [ ] MIDI convenience functions
+- [ ] Convenience functions
     - [ ] Channel-changing
     - [ ] Message-mapping
+    - [ ] Note/CC matching
+    - [ ] Inclusive ranges (thinking ".." for the fn name)
 - [ ] Refactor exec to create child envs
 - [ ] Collate TODOs from code
 - [ ] Convert lenses to plisp

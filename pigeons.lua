@@ -59,11 +59,6 @@ function setup_messages()
             }}
     ) ]]
 
-    --[[
-        beat repeat:
-            - notes 8-15: delay divisions (1/16 - 1/2 with triplets)
-            - CC 15: 0 = dry, no feedback. 127 = full wet/feedback (looper)
-    ]]
     local midi_script = utils.load_lisp_file('ot-beat-repeat.plisp')
     message.attach('midi', midi_script)
     
@@ -71,7 +66,6 @@ function setup_messages()
 
     -- this doesn't actually do anything... unless you plug/unplug stuff
     message.attach('midi-add-device', {'print-table', {'env'}})
-
 end
 
 function redraw()
