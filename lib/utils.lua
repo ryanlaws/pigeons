@@ -57,6 +57,9 @@ end
 utils.lisp_to_table = function (sexpr)
     -- wrap words in single quotes (end w/ digit(s) is OK)
     sexpr = string.gsub(sexpr, '([^%(%)0-9%s][^%(%)%s]*)', "'%0'")
+    -- so hacky.
+    sexpr = string.gsub(sexpr, '"false"', 'false')
+    sexpr = string.gsub(sexpr, '"true"', 'true')
     -- parens to curlies
     sexpr = string.gsub(sexpr, '%(', '{')
     sexpr = string.gsub(sexpr, '%)', '}')
