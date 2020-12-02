@@ -55,8 +55,9 @@ m.transmit = function (message_type, msg, origin)
     -- nah, this is problematic for lensing
     --    utils.warn("message", message_type, "not identified, ignoring")
     --    return false
-        handlers = {}
-        print('no handlers for '..message_type)
+
+        handlers = {} -- purely to avoid error on #handlers
+        -- print('no handlers for '..message_type)
     end
 
     -- it might be good to bring your own env...
