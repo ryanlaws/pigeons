@@ -12,15 +12,16 @@
     - [ ] Message-mapping
 - [ ] Refactor exec to create child envs
 - [ ] Collate TODOs from code
+- [ ] Convert lenses to plisp
 - [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
-- [ ] Refactor everything to use Lisp as much as possible
+- [ ] Refactor everything to use plisp as much as possible
 - [ ] Implement UI
     - [ ] Visual (keyboard-free) expression editor
     - [ ] Message "learn" (like MIDI learn)
 - [ ] Add debug mode
 - [ ] Refactor for library usage
     - [ ] Do not reference other modules via globals
-    - [ ] Messages and lisp MAY be useful separately (?)
+    - [ ] Messages and plisp MAY be useful separately (?)
 - [ ] Implement message throttling
     - [ ] Timers/clocks
     - [ ] Execution context (like closure env) - may need IDs, etc.
