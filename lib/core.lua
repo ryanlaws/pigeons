@@ -298,7 +298,7 @@ core['@'] = function(args, env)
 end
 
 -- I may have implemented this elsewhere... ugh
-core['lit'] = function (args, env)
+core['`'] = function (args, env)
     return args[1]
 end
 
@@ -383,7 +383,7 @@ lisp.defglobal('+', core['+'])
 lisp.defglobal('/', core['/'])
 lisp.defglobal('*', core['*'])
 lisp.defglobal('%', core['%'])
-lisp.defglobal('lit', core['lit'])
+lisp.defglobal('`', core['`'])
 lisp.defglobal('@', core['@'])
 lisp.defglobal('midi', core['midi'])
 lisp.defglobal('prop', core['prop'])
