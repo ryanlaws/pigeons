@@ -234,7 +234,7 @@ core['tx'] = function(args, env)
     message.transmit(message_type, msg, "lisp")
 end
 
-core['pairs'] = function(args, env)
+core[':'] = function(args, env)
     -- print('in pairs with '..#args..' args.')
     local t = {}
     for i=1,#args,2 do
@@ -393,7 +393,7 @@ lisp.defglobal('gdef', core['gdef'])
 lisp.defglobal('do', core['do'])
 lisp.defglobal('join', core['join'])
 lisp.defglobal('tx', core['tx'])
-lisp.defglobal('pairs', core['pairs'])
+lisp.defglobal(':', core[':'])
 lisp.defglobal('expr-to-sexpr', core['expr-to-sexpr'])
 
 return core
