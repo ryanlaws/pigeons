@@ -1,13 +1,13 @@
 (? (= (ch) 16)
-   (do (? (&
+   (do 
+      (? (&
             (= (type) note_on)
             (>= (@ (raw) 2) 8)
             (<= (@ (raw) 2) 15))
-         (do
-            (def delay-value (@
+         (tx track-fx2 
+            (: n 1 v (@ 
                   (` (7 15 23 31 47 63 95 127))
-                  (- (@ (raw) 2) 7)))
-            (tx track-fx2 (: n 1 v (delay-value)))))
+                  (- (@ (raw) 2) 7)))))
       (? (&
             (= (type) cc)
             (= (@ (raw) 2) 15))
