@@ -11,6 +11,9 @@ message = include('lib/message')
 -- lenses
 octatrack = include('midi-lens/octatrack')
 
+-- global definitions (for attaching events)
+include('lib/norns-pigeons-messages')
+
 -- TODO: add debug mode to toggle logging. it's noisy
 
 -- TODO: change this to env creation + reset
@@ -69,19 +72,6 @@ function setup_messages()
     -- this doesn't actually do anything... unless you plug/unplug stuff
     message.attach('midi-add-device', {'print-table', {'env'}})
 
-end
-
--- can enc/key be defined in a lib? I don't see why not...
-
--- is it arrogant to change these names?
--- 'enc' is terse but maybe confusing
--- 'key' is definitely confusing alongside HID (keyboard)
-function enc(n, v)
-    message.transmit('enc', { n=n, v=v }, 'panel')
-end
-
-function key(n, v)
-    message.transmit('btn', { n=n, v=v }, 'panel')
 end
 
 function redraw()
