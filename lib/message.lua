@@ -64,6 +64,7 @@ m.transmit = function (message_type, msg, origin)
     local env = lisp.make_env(msg)
 
     -- something feels off here
+    -- I think because we're doing lisp things in the message area
     for i = 1,#handlers do
         local derp = lisp.exec(handlers[i], env)
     end

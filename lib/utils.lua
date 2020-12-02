@@ -54,28 +54,30 @@ utils.table_to_string = function (table, depth)
     return str..indent..'}'
 end
 
+utils.lisp_to_table = function (sexpr)
+    -- wrap words in single quotes (end w/ digit(s) is OK)
+    sexpr = string.gsub(sexpr, '([^%(%)0-9%s][^%(%)%s]*)', "'%0'")
+    -- parens to curlies
+    sexpr = string.gsub(sexpr, '%(', '{')
+    sexpr = string.gsub(sexpr, '%)', '}')
+    -- contiguous whitespace to single comma
+    sexpr = string.gsub(sexpr, '%s+', ',')
+    
+    local fn, err = load('return '..sexpr)
+    if err then
+        error("error loading "..filename..":\n"..err)
+    end
+
+    return fn()
+end
+
 utils.load_lisp_file = function (filename)
     local file = io.open(base_script_path..filename, 'r')
     io.input(file)
     local contents = io.read('*all')
-    
-    -- wrap words in single quotes (end w/ digit(s) is OK)
-    contents = string.gsub(contents, '([^%(%)0-9%s][^%(%)%s]*)', "'%0'")
-    -- parens to curlies
-    contents = string.gsub(contents, '%(', '{')
-    contents = string.gsub(contents, '%)', '}')
-    -- contiguous whitespace to single comma
-    contents = string.gsub(contents, '%s+', ',')
-    
-    local fn, err = load('return '..contents)
-    if err then
-        io.close()
-        error("error loading "..filename..":\n"..err)
-    end
+    -- io.close() -- this keeps complaining, I'm just gonna ignore it for now lol
 
-    local table = fn()
-    io.close()
-    return table
+    return utils.lisp_to_table(contents)
 end
 
 return utils
