@@ -55,20 +55,31 @@ utils.table_to_string = function (table, depth)
 end
 
 utils.lisp_to_table = function (sexpr)
+    -- remove line comments
+    sexpr = string.gsub(sexpr, ';;[^\r\n]*(\r?\n)', "%1")
+
+    -- remove starting/trailing whitespace
+    sexpr = string.gsub(sexpr, '^%s+', '')
+    sexpr = string.gsub(sexpr, '%s+$', '')
+
     -- wrap words in single quotes (end w/ digit(s) is OK)
     sexpr = string.gsub(sexpr, '([^%(%)0-9%s][^%(%)%s]*)', "'%0'")
+
     -- so hacky.
     sexpr = string.gsub(sexpr, '"false"', 'false')
     sexpr = string.gsub(sexpr, '"true"', 'true')
+
     -- parens to curlies
     sexpr = string.gsub(sexpr, '%(', '{')
     sexpr = string.gsub(sexpr, '%)', '}')
+
     -- contiguous whitespace to single comma
     sexpr = string.gsub(sexpr, '%s+', ',')
     
     local fn, err = load('return '..sexpr)
     if err then
-        error("error loading "..filename..":\n"..err)
+        error("error parsing sexpr:\n"..err
+            .."\nbad sexpr:\n"..sexpr)
     end
 
     return fn()

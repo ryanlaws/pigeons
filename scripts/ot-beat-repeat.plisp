@@ -1,19 +1,31 @@
+;; listen on channel 16
 (? (= (ch) 16)
    (do 
+
+;; listen for notes 8-15
       (? (&
             (= (type) note_on)
             (>= (@ (raw) 2) 8)
             (<= (@ (raw) 2) 15))
+;; transmit FX 2 (delay) param 1 (TIME)
+;; use lookup table for delay TIMEs
          (tx track-fx2 
             (: n 1 v (@ 
                   (` (7 15 23 31 47 63 95 127))
                   (- (@ (raw) 2) 7)))))
+
+;; listen for CC 15
       (? (&
             (= (type) cc)
             (= (@ (raw) 2) 15))
          (do
+;; define v as second byte 
+;; (this will probably happen automatically in the future)
             (def v (@ (raw) 3))
+;; invert and halve value, send as VOL
             (tx track-ampparam
                (: n 4 v (/ (- 127 (v)) 2)))
+;; send value as-is to FX 2 (delay) params
+;; 2 = FB, 3 = VOL
             (tx track-fx2 (: n 2 v (v)))
             (tx track-fx2 (: n 3 v (v)))))))
