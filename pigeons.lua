@@ -30,12 +30,6 @@ function cleanup()
 end
 
 function setup_messages()
-    message.identify('enc')
-    message.identify('btn')
-    message.identify('midi')
-    message.identify('midi-add-device')
-    message.identify('midi-remove-device')
-
     lisp.defglobal('menu-open', false)
     lisp.defglobal('robin-counter', 0)
     lisp.defglobal('robin-counter-mod', 6)
