@@ -1,3 +1,7 @@
+;; -- BEAT REPEAT FOR OCTATRACK --
+;; notes 8-15: delay divisions (1/16 - 1/2 with triplets)
+;; CC 15: 0 = dry, no feedback; 127 = full wet/feedback (looper)
+
 ;; listen on channel 16
 (? (= (ch) 16)
    (do 
