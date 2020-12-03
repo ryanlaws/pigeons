@@ -28,6 +28,8 @@
     - [ ] Timers/clocks
     - [ ] Execution context (like closure env) - may need IDs, etc.
 - [ ] Add engine support
+- [ ] Add norns params read/write support
+    - [ ] This has its own MIDI mappings
 
 # DONE
 - [x] Implement (basic) MIDI output handlers
