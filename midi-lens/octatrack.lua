@@ -29,22 +29,23 @@ return {
             {['type']='note', ['n']={['range']={-12,12}, ['offset']=84}},
 
         -- modal
+        -- massive conflicts :(
         ['trig-slots']=       
-            {['type']='note', ['n']={['range']={0,127}},
+            {['type']='note', ['n']={['range']={0,127}}, ['mode']='trig-slots'},
         ['trig-slice']=       
-            {['type']='note', ['n']={['range']={1,64}, ['offset']=11},
+            {['type']='note', ['n']={['range']={1,64}, ['offset']=11}, ['mode']='trig-slice'},
         ['trig-quickmute-audio']=       
-            {['type']='note', ['n']={['range']={1,8}, ['offset']=11},
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=11}, ['mode']='trig-quickmute'},
         ['trig-quickmute-midi']=       
-            {['type']='note', ['n']={['range']={1,8}, ['offset']=19},
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=19}, ['mode']='trig-quickmute'},
         ['trig-freezedelay2-track']=
-            {['type']='note', ['n']={['range']={1,8}, ['offset']=11},
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=11}, ['mode']='trig-freezedelay'},
         ['trig-freezedelay2-time']=
-            {['type']='note', ['n']={['range']={1,8}, ['offset']=19},
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=19}, ['mode']='trig-freezedelay'},
         ['trig-freezedelay3-track']=
-            {['type']='note', ['n']={['range']={1,8}, ['offset']=35},
+           {['type']='note', ['n']={['range']={1,8}, ['offset']=35}, ['mode']='trig-freezedelay'},
         ['trig-freezedelay3-time']=
-            {['type']='note', ['n']={['range']={1,8}, ['offset']=43},
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=43}, ['mode']='trig-freezedelay'},
 
         ['stop-seq']=
             {['type']='note', ['n']=33},

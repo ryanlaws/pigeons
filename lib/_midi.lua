@@ -35,6 +35,9 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
     -- prep a table for easy lookup
     local lens = {}
 
+    local modes = {}
+    local mode = 'default'
+
     -- iterate over all messages
     for msg_type, spec in pairs(lens_def.messages) do
         if not lens[spec.type] then lens[spec.type] = {} end
@@ -44,24 +47,41 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
         spec.message_type = msg_type
 
         -- add the spec to the table under the key
+        local spec_mode = spec.mode or 'default'
         if type(spec.n) == 'number' then
-            if lens[spec.type][spec.n] then
+            if not lens[spec.type][spec.n] then
+                lens[spec.type][spec.n] = {}
+            end
+
+            if lens[spec.type][spec.n][spec_mode] then
                 error("already got lens["..spec.type
                     .."]["..spec.n.."], yikes!")
             end
-            lens[spec.type][spec.n] = spec
+            --print("associating "..spec.type.." #"..spec.n.." for mode "
+            --    ..(spec.mode or "(default)").." with "..msg_type)
+            lens[spec.type][spec.n][spec_mode] = spec
         elseif type(spec.n) == 'table' then
             local offset = spec.n.offset or 0
             for i=spec.n.range[1],spec.n.range[2] do
-                if lens[spec.type][i + offset] then
+                if not lens[spec.type][i + offset] then
+                    lens[spec.type][i + offset] = {}
+                end
+
+                if lens[spec.type][i + offset][spec_mode] then
+                    print("ABOUT TO BREAK trying to associate "
+                        ..spec.type.." #"..(i + offset).." with "..msg_type)
                     error("already got lens["..spec.type
                         .."]["..(i + offset).."], yikes!")
                 end
-                lens[spec.type][i + offset] = spec
+                lens[spec.type][i + offset][spec_mode] = spec
+                --print("associating "..spec.type.." #"..(i + offset).." with "
+                --    ..msg_type.." for mode "..(spec.mode or "(default)"))
             end
         else
             error("your spec doesn't have an .n, bud")
         end
+
+        modes[spec_mode] = true
 
         -- attach a message listener for that type
         -- TODO: make lenses work w/ multiple devices
@@ -71,7 +91,11 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
     end
 
     -- seems to be the point where all the errors would've been thrown
-    lenses[short_name] = lens_def
+    lenses[short_name] = {
+        ['def']=lens_def,
+        ['mode']=mode,
+        ['modes']=modes
+    }
 
     -- attach handler to MIDI event
     local fallback = _midi.make_tx_basic(port_id, dev_names[port_id])
@@ -100,25 +124,49 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
             lookup_type = 'note'
         end
 
+        local lens_mode = lenses[short_name].mode or 'default'
+
         local spec = (lens[lookup_type] or {})[raw[2]] or nil
         if spec == nil then 
             -- print('nil spec!') -- real noisy
             return fallback(raw) 
         end
 
+        print('looking up mode '..lens_mode..' in:')
+        print(utils.table_to_string(spec))
+        if not spec[lens_mode] then
+            print('it was not found! reverting to default')
+        end
+        local mode_spec = spec[lens_mode] or spec.default
+        if mode_spec == nil then 
+            print('no lens message found. falling back to regular MIDI')
+            -- print('nil spec!') -- real noisy
+            return fallback(raw) 
+        end
+        --print('lens short name')
+        print(short_name)
+        print('lens mode')
+        print(lens_mode)
+        print('spec:')
+        --local mode_spec = spec[lenses[short_name].mode or 'default']
+        --print('mode_spec type '..type(mode_spec))
+        --print('mode_spec n type '..type(mode_spec.n))
+        print(utils.table_to_string(mode_spec))
+        print('mode_spec message_type '..((mode_spec and mode_spec.message_type) or '(nil)'))
+
         local n_offset = 0
-        if type(spec.n) == 'number' then
+        if type(mode_spec.n) == 'number' then
             n_offset = 0
-        elseif spec.n.offset then
-            n_offset = spec.n.offset
+        elseif mode_spec.n.offset then
+            n_offset = mode_spec.n.offset
         end
 
         local n = raw[2] - n_offset
 
-        local v_offset = (spec.v and spec.v.offset) or 0
+        local v_offset = (mode_spec.v and mode_spec.v.offset) or 0
         local v = math.min(math.max(raw[3] - v_offset, 0), 127)
 
-        message.transmit(spec.message_type, { n=n, v=v }, 'midi')
+        message.transmit(mode_spec.message_type, { n=n, v=v }, 'midi')
     end
     print('attached midi device '..(port_id or '(nil)')..' to lens '
         ..((lens_def and lens_def['long-name']) or '(nil)')..' ...maybe?')
@@ -155,7 +203,7 @@ _midi.lens_to_midi = function (args, env)
         error('no lens called '..lens_name)
     end
 
-    lens = lenses[lens_name]
+    lens = lenses[lens_name].def
 
     if not lens.messages then
         error('\nsomething wrong with yr lens')
@@ -185,10 +233,12 @@ _midi.lens_to_midi = function (args, env)
 
         midi_n = util.clamp(env.n, msg.n.range[1], msg.n.range[2])
 
-        if type(msg.n.offset) ~= 'number' then
-            error('bad n offset (type '..type(msg.offset)..')')
-        end
-        midi_n = midi_n + msg.n.offset
+        local offset = ((type(msg.n.offset) == 'number') and msg.n.offset) or 0
+
+        --if type(msg.n.offset) ~= 'number' then
+        --    error('bad n offset (type '..type(msg.offset)..')')
+        --end
+        midi_n = midi_n + offset
     elseif midi_n == nil then
         midi_n = env.n
     end
@@ -303,6 +353,18 @@ _midi.init = function ()
             ..(midi.devices[dev.id] and " OK!" or " BROKEN!"))
         connect_device(dev.id, dev.name)
     end
+end
+
+_midi.set_lens_mode = function(lens_name, mode_name)
+    if not lenses[lens_name] then
+        error('no such lens: '..lens_name)
+    end
+
+    if not lenses[lens_name].modes[mode_name] then
+        error('no such mode '..mode_name..' for lens: '..lens_name)
+    end
+
+    lenses[lens_name].mode = mode_name
 end
 
 return _midi
