@@ -28,12 +28,31 @@ return {
         ['trig-chromatic']=       
             {['type']='note', ['n']={['range']={-12,12}, ['offset']=84}},
 
+        -- modal
+        ['trig-slots']=       
+            {['type']='note', ['n']={['range']={0,127}},
+        ['trig-slice']=       
+            {['type']='note', ['n']={['range']={1,64}, ['offset']=11},
+        ['trig-quickmute-audio']=       
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=11},
+        ['trig-quickmute-midi']=       
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=19},
+        ['trig-freezedelay2-track']=
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=11},
+        ['trig-freezedelay2-time']=
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=19},
+        ['trig-freezedelay3-track']=
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=35},
+        ['trig-freezedelay3-time']=
+            {['type']='note', ['n']={['range']={1,8}, ['offset']=43},
+
         ['stop-seq']=
             {['type']='note', ['n']=33},
         ['start-seq']=
             {['type']='note', ['n']=34},
         ['restart-seq']=
             {['type']='note', ['n']=35},
+
         ['rec-combo']=
             {['type']='note', ['n']=60},
         ['rec-ab']=
