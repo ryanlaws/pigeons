@@ -132,27 +132,27 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
             return fallback(raw) 
         end
 
-        print('looking up mode '..lens_mode..' in:')
-        print(utils.table_to_string(spec))
+        -- print('looking up mode '..lens_mode..' in:')
+        -- print(utils.table_to_string(spec))
         if not spec[lens_mode] then
-            print('it was not found! reverting to default')
+            -- print('it was not found! reverting to default')
         end
         local mode_spec = spec[lens_mode] or spec.default
         if mode_spec == nil then 
-            print('no lens message found. falling back to regular MIDI')
+            -- print('no lens message found. falling back to regular MIDI')
             -- print('nil spec!') -- real noisy
             return fallback(raw) 
         end
         --print('lens short name')
-        print(short_name)
-        print('lens mode')
-        print(lens_mode)
-        print('spec:')
+        -- print(short_name)
+        -- print('lens mode')
+        -- print(lens_mode)
+        -- print('spec:')
         --local mode_spec = spec[lenses[short_name].mode or 'default']
         --print('mode_spec type '..type(mode_spec))
         --print('mode_spec n type '..type(mode_spec.n))
-        print(utils.table_to_string(mode_spec))
-        print('mode_spec message_type '..((mode_spec and mode_spec.message_type) or '(nil)'))
+        -- print(utils.table_to_string(mode_spec))
+        -- print('mode_spec message_type '..((mode_spec and mode_spec.message_type) or '(nil)'))
 
         local n_offset = 0
         if type(mode_spec.n) == 'number' then
