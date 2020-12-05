@@ -4,7 +4,7 @@
     - [ ] Persist AST tables as sexprs
 - [ ] Load configuration from file
     - [x] Load .plisp as listener implementation
-    - [ ] Assign .plisp via config
+    - [x] Assign .plisp via config
     - [ ] Use named ports (e.g. Faderfox/Launchpad) when available
     - [ ] Use virtual MIDI ports instead of real IDs
 - [ ] Convenience functions
@@ -14,7 +14,8 @@
     - [ ] Inclusive ranges (thinking ".." for the fn name)
 - [ ] Refactor exec to create child envs
 - [ ] Collate TODOs from code
-- [ ] Convert lenses to plisp
+- [ ] Rethink lens modes - they're cheesy
+    - [ ] Conditions + state is more useful
 - [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
 - [ ] Refactor everything to use plisp as much as possible
 - [ ] Implement UI
@@ -56,3 +57,4 @@
     - [x] OT lens definition
     - [x] Input (MIDI from external devices)
     - [x] Output (MIDI to external devices)
+- [x] Convert lenses to plisp
