@@ -339,9 +339,9 @@ core['join'] = function(args, env)
     end
 
     local last_item
-    local str = ""
+    local str = args[1][1]
 
-    for i=1,#args[1] do
+    for i=2,#args[1] do
         local item = args[1][i]
         if type(item) == 'string' then
             -- TODO: move - doesn't belong here.
@@ -361,8 +361,20 @@ core['join'] = function(args, env)
     return str
 end
 
-core['exec-file'] = function(filename)
-    return lisp.exec_file(filename)
+core['exec-file'] = function(args, env)
+    local filename = lisp.exec(args[1], env) 
+    return lisp.exec_file(filename, env)
+end
+
+core['load-file'] = function(args, env)
+    local filename = lisp.exec(args[1], env) 
+    return lisp.load_file(filename, env)
+end
+
+core['attach-message'] = function(args, env)
+    local message_type = lisp.exec(args[1], env) 
+    local handler_def = args[2] -- exec would just be more awkward
+    message.attach(message_type, handler_def)
 end
 
 -- stinky
@@ -400,5 +412,7 @@ lisp.defglobal('tx', core['tx'])
 lisp.defglobal(':', core[':'])
 lisp.defglobal('expr-to-sexpr', core['expr-to-sexpr'])
 lisp.defglobal('exec-file', core['exec-file'])
+lisp.defglobal('load-file', core['load-file'])
+lisp.defglobal('attach-message', core['attach-message'])
 
 return core

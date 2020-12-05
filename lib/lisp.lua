@@ -48,8 +48,9 @@ lisp.exec = function (expr, env)
         return expr
     elseif type(expr) == 'number' then
         return expr
+    elseif type(expr) == 'boolean' then
+        return expr
     elseif expr == nil then
-        -- utils.warn("nil expr. BYE!")
         return expr
     elseif #expr == 0 then
         -- utils.warn("empty or non-sequential expr. BYE!")
@@ -83,8 +84,12 @@ lisp.exec = function (expr, env)
     return item(args, env)
 end
 
-lisp.exec_file = function(filename)
-    return lisp.exec(utils.load_lisp_file(filename))
+lisp.load_file = function(filename)
+    return utils.load_lisp_file(filename)
+end
+
+lisp.exec_file = function(filename, env)
+    return lisp.exec(lisp.load_file(filename), env)
 end
 
 lisp.eval = function ()

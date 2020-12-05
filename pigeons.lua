@@ -20,8 +20,11 @@ octatrack = lisp.exec_file('midi-lens/octatrack')
 --       don't wanna wipe everything, keep e.g. core
 
 function init()
-    setup_messages()
+    -- where the magic happens
+    lisp.exec_file('app/main')
     _midi.init()
+    setup_messages()
+
     -- TODO: attach by NAME which is more stable
     -- TODO: do all this in CONFIG. this whole file is really CONFIG
     _midi.add_lens(2, octatrack, {1,2,3,4,5,6,7,8,9}) -- must happen AFTER midi init
@@ -33,12 +36,6 @@ function cleanup()
 end
 
 function setup_messages()
-    lisp.defglobal('menu-open', false)
-    lisp.defglobal('out-channel', 9) -- OT current track
-    -- menus make clear the need to switch envs
-    message.attach('btn', {'?',{'&',{'=',1,{'n'}},{'=',1,{'v'}}},
-            {'gdef','menu-open',{'!',{'menu-open'}}}})
-
     local midi_script = utils.load_lisp_file('scripts/ot-beat-repeat')
     message.attach('midi', midi_script)
     
