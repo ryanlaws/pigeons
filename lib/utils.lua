@@ -1,6 +1,6 @@
 local utils = {}
 
-local base_script_path = '/home/we/dust/code/pigeons/scripts/'
+local base_lisp_path = '/home/we/dust/code/pigeons/'
 
 utils.tail = function (t, start)
     start = start or 2
@@ -63,11 +63,16 @@ utils.lisp_to_table = function (sexpr)
     sexpr = string.gsub(sexpr, '%s+$', '')
 
     -- wrap words in single quotes (end w/ digit(s) is OK)
-    sexpr = string.gsub(sexpr, '([^%(%)0-9%s][^%(%)%s]*)', "'%0'")
+    sexpr = string.gsub(sexpr, '[^-%(%)0-9%s][^%(%)%s]*', "'%0'")
+    -- wrap minus + non-space/number/paren(s) in single quote
+    sexpr = string.gsub(sexpr, '([%(%)%s]+)(-[^%(%)0-9%s]+)', "%1'%2'")
+    -- wrap lone minus within paren/space in single quote
+    sexpr = string.gsub(sexpr, '([%(%)%s]+)-([%(%)%s]+)', "%1'-'%2")
 
     -- so hacky.
-    sexpr = string.gsub(sexpr, '"false"', 'false')
-    sexpr = string.gsub(sexpr, '"true"', 'true')
+    sexpr = string.gsub(sexpr, "'false'", 'false')
+    sexpr = string.gsub(sexpr, "'true'", 'true')
+    sexpr = string.gsub(sexpr, "'nil'", 'nil')
 
     -- parens to curlies
     sexpr = string.gsub(sexpr, '%(', '{')
@@ -86,7 +91,7 @@ utils.lisp_to_table = function (sexpr)
 end
 
 utils.load_lisp_file = function (filename)
-    local file = io.open(base_script_path..filename, 'r')
+    local file = io.open(base_lisp_path..filename..'.plisp', 'r')
     io.input(file)
     local contents = io.read('*all')
     -- io.close() -- this keeps complaining, I'm just gonna ignore it for now lol

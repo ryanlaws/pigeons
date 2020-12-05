@@ -9,7 +9,7 @@ core = include('lib/core')
 message = include('lib/message')
 
 -- lenses
-octatrack = include('midi-lens/octatrack')
+octatrack = lisp.exec(utils.load_lisp_file('midi-lens/octatrack'))
 
 -- global definitions (for attaching events)
 include('lib/norns-pigeons-messages')
@@ -59,7 +59,7 @@ function setup_messages()
             }}
     ) ]]
 
-    local midi_script = utils.load_lisp_file('ot-beat-repeat.plisp')
+    local midi_script = utils.load_lisp_file('scripts/ot-beat-repeat')
     message.attach('midi', midi_script)
     
     -- all this MIDI stuff can proooobably get moved to the lib.
