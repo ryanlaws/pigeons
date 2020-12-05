@@ -8,11 +8,11 @@ lisp = include('lib/lisp')
 core = include('lib/core')
 message = include('lib/message')
 
--- lenses
-octatrack = lisp.exec(utils.load_lisp_file('midi-lens/octatrack'))
-
 -- global definitions (for attaching events)
 include('lib/norns-pigeons-messages')
+
+-- lenses
+octatrack = lisp.exec_file('midi-lens/octatrack')
 
 -- TODO: add debug mode to toggle logging. it's noisy
 
@@ -34,30 +34,10 @@ end
 
 function setup_messages()
     lisp.defglobal('menu-open', false)
-    lisp.defglobal('robin-counter', 0)
-    lisp.defglobal('robin-counter-mod', 6)
-    lisp.defglobal('robin-offset', 3)
     lisp.defglobal('out-channel', 9) -- OT current track
     -- menus make clear the need to switch envs
     message.attach('btn', {'?',{'&',{'=',1,{'n'}},{'=',1,{'v'}}},
             {'gdef','menu-open',{'!',{'menu-open'}}}})
-    --[[ message.attach('midi', 
-        {'?',{'=',{'ch'},16},
-            {'do',
-                {'def@','raw',1, 
-                    {'-', 
-                        {'at',{'raw'},1},
-                        {'-',16,{'out-channel'}}}},
-                {'midi',2,{'raw'}},
-                -- {'print-expr', {'+', {'robin-counter'}, {'robin-offset'}}},
-                {'midi',{'+', {'robin-counter'}, {'robin-offset'}},{'raw'}},
-                {'gdef', 
-                    'robin-counter', 
-                    {'%', 
-                        {'+', {'robin-counter'}, 1}, 
-                        {'robin-counter-mod'}}}
-            }}
-    ) ]]
 
     local midi_script = utils.load_lisp_file('scripts/ot-beat-repeat')
     message.attach('midi', midi_script)

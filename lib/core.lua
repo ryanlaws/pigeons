@@ -361,6 +361,10 @@ core['join'] = function(args, env)
     return str
 end
 
+core['exec-file'] = function(filename)
+    return lisp.exec_file(filename)
+end
+
 -- stinky
 -- could probably just iterate over all these keys
 -- I keep forgetting to add these lol. probably a sign that I should iterate...
@@ -395,5 +399,6 @@ lisp.defglobal('join', core['join'])
 lisp.defglobal('tx', core['tx'])
 lisp.defglobal(':', core[':'])
 lisp.defglobal('expr-to-sexpr', core['expr-to-sexpr'])
+lisp.defglobal('exec-file', core['exec-file'])
 
 return core

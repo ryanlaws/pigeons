@@ -83,6 +83,10 @@ lisp.exec = function (expr, env)
     return item(args, env)
 end
 
+lisp.exec_file = function(filename)
+    return lisp.exec(utils.load_lisp_file(filename))
+end
+
 lisp.eval = function ()
 end
 
