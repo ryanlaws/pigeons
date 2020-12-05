@@ -3,14 +3,15 @@
 - [x] Event handling (norns controls, MIDI)
 - [x] Event monitoring (simple)
 - [x] MIDI output
-- [ ] Poor man's sexpr save/load
+- [x] Poor man's sexpr load
+- [ ] Poor man's sexpr save (not useful w/o editing)
 (POINT OF MVP USEFULNESS)
 - [ ] Persistent display of control values, not just logging
 - [ ] Real sexpr persistence
 - [x] Real sexpr parsing
 - [ ] Mode-level environments
 - [ ] Event recording (technically already possible... sorta)
-- [ ] Event filtering
+- [x] Event filtering (can be done with plisp)
 - [ ] Scheduling (sequencing, delay, throttle, etc.)
 - [ ] Event handling (crow, app-level events)
 - [ ] Expression editing
