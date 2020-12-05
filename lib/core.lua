@@ -368,13 +368,22 @@ end
 
 core['load-file'] = function(args, env)
     local filename = lisp.exec(args[1], env) 
+    print('loading file '..filename)
     return lisp.load_file(filename, env)
 end
 
 core['attach-message'] = function(args, env)
     local message_type = lisp.exec(args[1], env) 
-    local handler_def = args[2] -- exec would just be more awkward
+    local handler_def = lisp.exec(args[2], env) -- actually need exec. ugh
     message.attach(message_type, handler_def)
+end
+
+ -- must happen AFTER midi init
+core['add-lens'] = function(args, env)
+    local port_id = lisp.exec(args[1], env)
+    local lens_def = lisp.exec(args[2], env)
+    local lens_channels = args[3] and lisp.exec(args[3], env)
+    _midi.add_lens(port_id, lens_def, lens_channels)
 end
 
 -- stinky
@@ -414,5 +423,6 @@ lisp.defglobal('expr-to-sexpr', core['expr-to-sexpr'])
 lisp.defglobal('exec-file', core['exec-file'])
 lisp.defglobal('load-file', core['load-file'])
 lisp.defglobal('attach-message', core['attach-message'])
+lisp.defglobal('add-lens', core['add-lens'])
 
 return core
