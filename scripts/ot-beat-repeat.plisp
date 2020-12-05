@@ -15,7 +15,7 @@
 ;; use lookup table for delay TIMEs
          (tx track-fx2 
             (: n 1 v (@ 
-                  (` (7 15 23 31 47 63 95 127))
+                  (` 7 15 23 31 47 63 95 127)
                   (- (@ (raw) 2) 7)))))
 
 ;; listen for CC 15

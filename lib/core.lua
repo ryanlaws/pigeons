@@ -299,7 +299,7 @@ end
 
 -- I may have implemented this elsewhere... ugh
 core['`'] = function (args, env)
-    return args[1]
+    return args
 end
 
 -- having both of these separate is probably only useful w/ currying
