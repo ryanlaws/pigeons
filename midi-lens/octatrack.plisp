@@ -10,7 +10,10 @@
     ;; so this is mostly aspirational.
 
     ;; auto channel
-    config (: default-channel 9)
+    config (: 
+        default-channel 9
+        default-v 100
+    )
 
     ;; this syntax feels a bit tedious to me.
     ;; - nesting might be good for editing on norns' screen.
@@ -69,7 +72,7 @@
 
         stop-seq (: 
             type note n 33)
-        start-seq (: 
+        startstop-seq (: 
             type note n 34)
         restart-seq (: 
             type note n 35)
