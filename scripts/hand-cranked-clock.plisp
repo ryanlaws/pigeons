@@ -1,0 +1,7 @@
+;; turn every midi message into clock + start messages
+;; throttling start via a scheduler would be better
+(attach-message midi 
+    (do (midi 2 (` 248))
+        (midi 2 (` 250))
+    )
+)
