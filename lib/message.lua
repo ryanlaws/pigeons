@@ -40,6 +40,7 @@ end
 m.transmit = function (message_type, msg, origin)
     -- getting time *immediately* is good for latency
     local now = util.time()
+    msg = msg or {}
 
     msg.now = now
     msg.message_type = message_type
