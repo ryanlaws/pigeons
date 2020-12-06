@@ -248,7 +248,7 @@ end
 
 core['expr-to-sexpr'] = function(args, env, list)
     if type(args) ~= 'table' then error('bad args') end
-    if type(args[1]) ~= 'table' then error('arg is not a table') end
+    if type(args[1]) ~= 'table' then error('expr-to-sexpr arg is not a table') end
 
     if list == nil then 
         list = {}
@@ -326,7 +326,7 @@ end
 
 core['join'] = function(args, env)
     if type(args) ~= 'table' then error('bad args') end
-    if type(args[1]) ~= 'table' then error('arg is not a table') end
+    if type(args[1]) ~= 'table' then error('join arg is not a table') end
 
     local glue
 
@@ -335,7 +335,7 @@ core['join'] = function(args, env)
     elseif type(args[2]) ~= 'string' then 
         glue = args[2]
     else
-        error("I don't know what to do with a "..type(args[2]))
+        error("join doen't know what to do with a "..type(args[2]))
     end
 
     local last_item
@@ -352,8 +352,10 @@ core['join'] = function(args, env)
             end
         elseif type(item) == 'number' then
             str = str..glue..item
+        elseif type(item) == 'table' then
+            str = str..glue..lisp.exec(item, env)
         else
-            error("I don't know what to do with a "..type(item))
+            error("join doen't know what to do with a "..type(item))
         end
         last_item = item
     end
