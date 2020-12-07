@@ -47,14 +47,14 @@ m.transmit = function (message_type, msg, origin)
     msg.origin = origin or msg.origin or "lua"
 
     if not message_type then
-        utils.warn("message has no type, ignoring")
+        Utils.warn("message has no type, ignoring")
         return false
     end
 
     local handlers = m.listeners[message_type]
     if not handlers then
     -- nah, this is problematic for lensing
-    --    utils.warn("message", message_type, "not identified, ignoring")
+    --    Utils.warn("message", message_type, "not identified, ignoring")
     --    return false
 
         handlers = {} -- purely to avoid error on #handlers
@@ -63,17 +63,17 @@ m.transmit = function (message_type, msg, origin)
 
     -- it might be good to bring your own env...
     -- for inheritance, and stuff
-    local env = lisp.make_env(msg)
+    local env = Lisp.make_env(msg)
 
     -- something feels off here
     -- I think because we're doing lisp things in the message area
     for i = 1,#handlers do
-        local derp = lisp.exec(handlers[i], env)
+        local derp = Lisp.exec(handlers[i], env)
     end
 
     m.log(msg)
-    -- this is very tacky. I don't like it. 
-    _ui.dirty = true
+    -- this is very tacky. I don't like it.
+    _Ui.dirty = true
 end
 
 -- TODO: implement in lisp so we can utilize environment
@@ -91,7 +91,7 @@ end
 -- it is useful for discoverability though
 m.identify = function (name)
     if m.listeners[name] ~= nil then
-        utils.warn("message", name, "already identified")
+        Utils.warn("message", name, "already identified")
         return false
     end
     m.listeners[name] = {}

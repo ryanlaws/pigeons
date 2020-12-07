@@ -17,7 +17,7 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
 
     if not lens_to_midi_defined then
         print('defining lens-to-midi')
-        lisp.defglobal('lens-to-midi', _midi['lens_to_midi'])
+        Lisp.defglobal('lens-to-midi', _midi['lens_to_midi'])
         lens_to_midi_defined = true
     end
 
@@ -29,7 +29,7 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
     end
 
     -- this is so cheesy it hurts but yagni, etc.
-    -- print(utils.table_to_string(lens_def, 0, 0))
+    -- print(Utils.table_to_string(lens_def, 0, 0))
     local channel = lens_def.config['default-channel']
     local short_name = lens_def['short-name']
 
@@ -80,7 +80,7 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
             end
         else
             print("your spec doesn't have an .n, bud")
-            print(utils.table_to_string(spec))
+            print(Utils.table_to_string(spec))
             error('busted spec')
         end
 
@@ -90,7 +90,7 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
         -- TODO: make lenses work w/ multiple devices
         -- I really wanna implement this in lisp but it's not time yet :(
         -- also... how does this get the port? heh
-        message.attach(msg_type, {'lens-to-midi', port_id, short_name })
+        Message.attach(msg_type, {'lens-to-midi', port_id, short_name })
     end
 
     -- seems to be the point where all the errors would've been thrown
@@ -104,10 +104,10 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
     local fallback = _midi.make_tx_basic(port_id, dev_names[port_id])
     print('preparing to attach midi device '..port_id
         ..' to lens '..lens_def['long-name']..' for channels:')
-    print(utils.table_to_string(lens_channels))
+    print(Utils.table_to_string(lens_channels))
 
     if not midi.devices[port_id] then
-        utils.warn('device port_id '..(port_id or nil).." nonexistent; won't lens.")
+        Utils.warn('device port_id '..(port_id or nil).." nonexistent; won't lens.")
         return
     end
 
@@ -138,7 +138,7 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
         end
 
         -- print('looking up mode '..lens_mode..' in:')
-        -- print(utils.table_to_string(spec))
+        -- print(Utils.table_to_string(spec))
         if not spec[lens_mode] then
             -- print('it was not found! reverting to default')
         end
@@ -156,7 +156,7 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
         --local mode_spec = spec[lenses[short_name].mode or 'default']
         --print('mode_spec type '..type(mode_spec))
         --print('mode_spec n type '..type(mode_spec.n))
-        -- print(utils.table_to_string(mode_spec))
+        -- print(Utils.table_to_string(mode_spec))
         -- print('mode_spec message_type '..((mode_spec and mode_spec.message_type) or '(nil)'))
 
         local n_offset = 0
@@ -173,7 +173,7 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
 
         local env = { n=n, v=v }
         -- print('transmitting '..node_spec.message_type..': '..table_to_string())
-        message.transmit(mode_spec.message_type, env, 'midi')
+        Message.transmit(mode_spec.message_type, env, 'midi')
     end
     print('attached midi device '..(port_id or '(nil)')..' to lens '
         ..((lens_def and lens_def['long-name']) or '(nil)')..' ...maybe?')
@@ -213,7 +213,7 @@ _midi.lens_to_midi = function (args, env)
         error('no lens called '..lens_name)
     end
 
-    lens = lenses[lens_name].def
+    local lens = lenses[lens_name].def
 
     if not lens.messages then
         error('\nsomething wrong with yr lens')
@@ -229,7 +229,7 @@ _midi.lens_to_midi = function (args, env)
         error('\nlens '..lens_name..' message def '..msg_type
             ..' is missing MIDI message type')
     elseif midi_type == 'note' then
-        midi_type = v == 0 and 'note_off' or 'note_on'
+        midi_type = msg_v == 0 and 'note_off' or 'note_on'
     end
 
     local midi_n = msg.n
@@ -326,7 +326,7 @@ _midi.make_tx_basic = function (dev_id, dev_name)
         msg['dev-name'] = dev_name
         msg['long-type'] = long_type
         msg['raw'] = event
-        message.transmit('midi', msg, 'midi')
+        Message.transmit('midi', msg, 'midi')
     end
 end
 
@@ -347,15 +347,17 @@ end
 
 _midi.init = function ()
     midi.add = function (dev)
-        message.transmit('midi-add-device', dev, 'usb') -- usb origin seems weird
+        Message.transmit('midi-add-device', dev, 'usb') -- usb origin seems weird
         connect_device(dev.id, dev.name)
     end
 
     midi.remove = function (...)
         local args = table.pack(...)
         print("removing midi device - #args="..#args)
+
+        local dev = args[1]
         dev_names[dev.id] = nil
-        message.transmit('midi-remove-device', dev, 'usb') -- usb origin seems weird
+        Message.transmit('midi-remove-device', dev, 'usb') -- usb origin seems weird
     end
 
     midi.cleanup()

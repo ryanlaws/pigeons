@@ -1,12 +1,12 @@
 -- globals are kinda gross.
 -- but probably fine.
 -- if not, there's always DI. heh.
-_ui = include('lib/_ui')
-_midi = include('lib/_midi')
-utils = include('lib/utils')
-lisp = include('lib/lisp')
-core = include('lib/core')
-message = include('lib/message')
+_Ui = include('lib/_ui')
+_Midi = include('lib/_midi')
+Utils = include('lib/utils')
+Lisp = include('lib/lisp')
+Core = include('lib/core')
+Message = include('lib/message')
 
 -- global definitions (for attaching events)
 include('lib/norns-pigeons-messages')
@@ -16,13 +16,15 @@ include('lib/norns-pigeons-messages')
 -- TODO: change this to env creation + reset
 --       don't wanna wipe everything, keep e.g. core
 
-function init()
-    _midi.init()
-    -- where the magic happens
-    lisp.exec_file('app/main')
-    lisp.exec_file('config')
+local redraw_clock_id
 
-    redraw_clock_id = clock.run(_ui.redraw_clock)
+function init()
+    _Midi.init()
+    -- where the magic happens
+    Lisp.exec_file('app/main')
+    Lisp.exec_file('config')
+
+    redraw_clock_id = clock.run(_Ui.redraw_clock)
 end
 
 function cleanup()
@@ -30,5 +32,5 @@ function cleanup()
 end
 
 function redraw()
-    _ui.draw()
+    _Ui.draw()
 end

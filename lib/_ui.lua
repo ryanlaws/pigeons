@@ -16,9 +16,9 @@ _ui.fps = 30
 
 _ui.draw_spinner = function(x, y, frame1, frame2)
     screen.line_width(1)
-    frame1dim = string.char(65 + ((frame1 + 6) % 12))
+    local frame1dim = string.char(65 + ((frame1 + 6) % 12))
     frame1 = string.char(65 + frame1)
-    frame2dim = string.char(48 + ((frame2 + 5) % 10))
+    local frame2dim = string.char(48 + ((frame2 + 5) % 10))
     frame2 = string.char(48 + frame2)
     for row=1,#spinner_pixels do
         for col=1,6 do
@@ -63,7 +63,7 @@ _ui.draw = function ()
     screen.font_face(1)
     screen.level(15)
 
-    if #message.logs == 0 then
+    if #Message.logs == 0 then
         screen.move(0, font_size)
         screen.text("Hello,")
         screen.stroke()
@@ -71,10 +71,10 @@ _ui.draw = function ()
         return
     end
 
-    for i=1,#message.logs do
-        local msg = message.logs[i].message
-        local spinner_index1 = message.logs[i].spinner_index1
-        local spinner_index2 = message.logs[i].spinner_index2
+    for i=1,#Message.logs do
+        local msg = Message.logs[i].message
+        local spinner_index1 = Message.logs[i].spinner_index1
+        local spinner_index2 = Message.logs[i].spinner_index2
         _ui.draw_spinner(-2, (font_size - 1) * (i - 1) + 1, spinner_index1, spinner_index2)
 
         screen.level(15)
@@ -82,7 +82,7 @@ _ui.draw = function ()
         screen.text(_ui.message_to_string(msg))
     end
 
-    if lisp.exec({ 'menu-open' }) then
+    if Lisp.exec({ 'menu-open' }) then
         _ui.draw_menu()
     end
 
@@ -123,9 +123,9 @@ _ui.draw_menu = function ()
     screen.font_face(1)
     screen.level(3)
     screen.move(0, font_size)
-    screen.text(core['join']({ core['expr-to-sexpr']({ message.listeners.btn[1] }) }))
+    screen.text(Core['join']({ Core['expr-to-sexpr']({ Message.listeners.btn[1] }) }))
     screen.stroke()
-    -- print(utils.table_to_string(message.listeners.btn[1]))
+    -- print(utils.table_to_string(Message.listeners.btn[1]))
 end
 
 _ui.redraw_clock = function ()
