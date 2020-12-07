@@ -137,27 +137,10 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
             return fallback(raw) 
         end
 
-        -- print('looking up mode '..lens_mode..' in:')
-        -- print(Utils.table_to_string(spec))
-        if not spec[lens_mode] then
-            -- print('it was not found! reverting to default')
-        end
         local mode_spec = spec[lens_mode] or spec.default
         if mode_spec == nil then 
-            -- print('no lens message found. falling back to regular MIDI')
-            -- print('nil spec!') -- real noisy
             return fallback(raw) 
         end
-        --print('lens short name')
-        -- print(short_name)
-        -- print('lens mode')
-        -- print(lens_mode)
-        -- print('spec:')
-        --local mode_spec = spec[lenses[short_name].mode or 'default']
-        --print('mode_spec type '..type(mode_spec))
-        --print('mode_spec n type '..type(mode_spec.n))
-        -- print(Utils.table_to_string(mode_spec))
-        -- print('mode_spec message_type '..((mode_spec and mode_spec.message_type) or '(nil)'))
 
         local n_offset = 0
         if type(mode_spec.n) == 'number' then
@@ -181,14 +164,6 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
 end
 
 _midi.lens_to_midi = function (args, env)
-    -- print("message_type = "..env.message_type)
-    -- print("origin = "..env.origin)
-    -- print("n = "..env.n)
-    -- print("v = "..env.v)
-
-    -- it's pretty tacky to assume "n" or "v" I guess
-    -- it should really depend on the MIDI msg type being lensed
-    -- if (not env.n) or (not env.v) or (type(env.message_type) ~= 'string') then
     -- we need to get an n and v. we don't have to get from env tho.
     if (type(env.message_type) ~= 'string') then
         error('malformed lens message - message_type is a '..type(env.message_type)..', not a string')
@@ -196,8 +171,6 @@ _midi.lens_to_midi = function (args, env)
 
     -- we are assuming every message needs an n and v. this just isn't true.
     local msg_type = env.message_type
-    local msg_n = env.n
-    local msg_v = env.v
 
     local port_id = args[1]
     local lens_name = args[2]
@@ -229,7 +202,7 @@ _midi.lens_to_midi = function (args, env)
         error('\nlens '..lens_name..' message def '..msg_type
             ..' is missing MIDI message type')
     elseif midi_type == 'note' then
-        midi_type = msg_v == 0 and 'note_off' or 'note_on'
+        midi_type = (msg.v == 0) and 'note_off' or 'note_on'
     end
 
     local midi_n = msg.n
@@ -305,17 +278,9 @@ _midi.lens_to_midi = function (args, env)
     -- TODO: implement non-channeled message types
 
 
-    -- device:send(lisp.exec(args[2], env))
+    -- device:send(Lisp.exec(args[2], env))
 
     -- and now we get to work
-end
-
-local function is_lensed (id)
-    return lensed_ports[id] ~= nil
-end
-
-local function tx_lens_event (event)
-    return false -- fall back to regular MIDI event
 end
 
 _midi.make_tx_basic = function (dev_id, dev_name)

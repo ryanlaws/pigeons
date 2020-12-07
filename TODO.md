@@ -9,6 +9,7 @@
     - [ ] Use virtual MIDI ports instead of real IDs
 - [ ] Convenience functions
     - [ ] Channel-changing
+        - [ ] Do things across multiple channels, like OT tracks
     - [ ] Message-mapping
     - [ ] Note/CC matching
     - [ ] Inclusive ranges (thinking ".." for the fn name)

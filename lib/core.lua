@@ -1,21 +1,11 @@
 local core = {}
 
--- ok, I added env and it looks kinda silly now. oh well.
--- I think this might be useless now w/ non-nested messages
-core['print-message'] = function (_, env)
-    print(math.floor(env.now * 1000)..' - message of type '
-        ..env.message_type..':')
-    for k, v in pairs(env.message) do
-        print(k .. ' = ' .. v)
-    end
-end
-
 core['print-expr'] = function (args, env)
     local printable = args[1]
     -- assume we only care about first arg of expression
     -- I need to be able to get the whole env... I know this is gross
-    local result 
-    if printable and #printable > 0 then 
+    local result
+    if printable and #printable > 0 then
         result = Lisp.exec(printable, env)
     else
         result = env
@@ -25,10 +15,6 @@ end
 
 core['print-table'] = function (args, env)
     print(Utils.table_to_string(args[1]))
-end
-
-core['env'] = function (args, env)
-    return env
 end
 
 core['='] = function (args, env)
@@ -132,7 +118,7 @@ end
 core['midi'] = function (args, env)
     local dev_id = Lisp.exec(args[1], env)
     local device = type(dev_id) == 'number' and midi.devices[dev_id] or nil
-    if device == nil then 
+    if device == nil then
         error("bogus MIDI device ID!")
     end
 
@@ -216,7 +202,6 @@ end
 
 core['pairs-to-table'] = function (args, env)
     local t = {}
-    local count = #args
     for i=1, #args, 2  do
         if i+1 <= #args then
             local k = Lisp.exec(args[i], env)
@@ -224,7 +209,7 @@ core['pairs-to-table'] = function (args, env)
             if type(k) == 'string' and v ~= nil then
                 t[k] = t[v]
             end
-        end 
+        end
     end
 end
 
@@ -250,18 +235,18 @@ core['expr-to-sexpr'] = function(args, env, list)
     if type(args) ~= 'table' then error('bad args') end
     if type(args[1]) ~= 'table' then error('expr-to-sexpr arg is not a table') end
 
-    if list == nil then 
+    if list == nil then
         list = {}
-    elseif type(list) ~= 'table' then 
-        error('list is not a table') 
+    elseif type(list) ~= 'table' then
+        error('list is not a table')
     end
 
     table.insert(list, '(')
 
     for i=1,#args[1] do
         local item = args[1][i]
-        if type(item) == 'table' then 
-            -- gross mutation 
+        if type(item) == 'table' then
+            -- gross mutation
             core['expr-to-sexpr']({ item }, env, list)
         elseif type(item) == 'string' then
             table.insert(list, item)
@@ -277,21 +262,21 @@ core['expr-to-sexpr'] = function(args, env, list)
 end
 
 core['@'] = function(args, env)
-    if type(args) ~= 'table' or #args < 2 then 
-        error('bad args - not table or empty table') 
+    if type(args) ~= 'table' or #args < 2 then
+        error('bad args - not table or empty table')
     end
 
     local table = Lisp.exec(args[1], env)
     local key = Lisp.exec(args[2], env)
 
-    if type(table) ~= 'table' then 
-        error('.@ arg[1] is not a table') 
+    if type(table) ~= 'table' then
+        error('.@ arg[1] is not a table, it is a '..type(table))
     end
 
     -- in fact lua accepts anything besides nil
     -- but what's useful besides string and number?
-    if (type(key) ~= 'string') and (type(key) ~= 'number') then 
-        error('.@ arg[2] is not a string or number') 
+    if (type(key) ~= 'string') and (type(key) ~= 'number') then
+        error('.@ arg[2] is not a string or number')
     end
 
     return table[key]
@@ -304,8 +289,8 @@ end
 
 -- having both of these separate is probably only useful w/ currying
 core['of'] = function(args, env)
-    if type(args) ~= 'table' or #args < 2 then 
-        error('bad args - not table or empty table') 
+    if type(args) ~= 'table' or #args < 2 then
+        error('bad args - not table or empty table')
     end
 
     local key = args[1]
@@ -313,12 +298,12 @@ core['of'] = function(args, env)
 
     -- in fact lua accepts anything besides nil
     -- but what's useful besides string and number?
-    if (type(key) ~= 'string') or (type(key) ~= 'number') then 
-        error('.of arg[1] is not a string or number') 
+    if (type(key) ~= 'string') or (type(key) ~= 'number') then
+        error('.of arg[1] is not a string or number')
     end
 
-    if type(table) ~= 'table' then 
-        error('.of arg[2] is not a table') 
+    if type(table) ~= 'table' then
+        error('.of arg[2] is not a table')
     end
 
     return table[key]
@@ -330,30 +315,32 @@ core['join'] = function(args, env)
 
     local glue
 
-    if args[2] == nil then 
+    if args[2] == nil then
         glue = " "
-    elseif type(args[2]) ~= 'string' then 
+    elseif type(args[2]) ~= 'string' then
         glue = args[2]
     else
         error("join doen't know what to do with a "..type(args[2]))
     end
 
     local last_item
-    local str = args[1][1]
+    local str = ''
 
-    for i=2,#args[1] do
+    for i=1,#args[1] do
         local item = args[1][i]
         if type(item) == 'string' then
             -- TODO: move - doesn't belong here.
             if (last_item == "(") or (item == ")")  then
                 str = str..item
             else
-                str = str..glue..item
+                str = str..((i ~= i) and glue or '')..item
             end
         elseif type(item) == 'number' then
             str = str..glue..item
         elseif type(item) == 'table' then
-            str = str..glue..Lisp.exec(item, env)
+            local item_str = Lisp.exec(item, env)
+            if item_str == nil then item_str = '(nil)' end
+            str = str..((i ~= i) and glue or '')..item_str
         else
             error("join doen't know what to do with a "..type(item))
         end
@@ -364,18 +351,18 @@ core['join'] = function(args, env)
 end
 
 core['exec-file'] = function(args, env)
-    local filename = Lisp.exec(args[1], env) 
+    local filename = Lisp.exec(args[1], env)
     return Lisp.exec_file(filename, env)
 end
 
 core['load-file'] = function(args, env)
-    local filename = Lisp.exec(args[1], env) 
+    local filename = Lisp.exec(args[1], env)
     print('loading file '..filename)
     return Lisp.load_file(filename, env)
 end
 
 core['attach-message'] = function(args, env)
-    local message_type = Lisp.exec(args[1], env) 
+    local message_type = Lisp.exec(args[1], env)
     local handler_def = Lisp.exec(args[2], env) -- actually need exec. ugh
     Message.attach(message_type, handler_def)
 end
