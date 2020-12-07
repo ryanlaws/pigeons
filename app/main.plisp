@@ -5,7 +5,8 @@
     (gdef menu-open false)
     (gdef out-channel 9) ;; OT current track
     ;; menus make clear the need to switch envs
-    (attach-message btn (? 
+    (attach-message btn (` ? 
             (& (= 1 (n)) (= 1 (v)))
-            (gdef menu-open (! (menu-open)))))
+            (gdef menu-open (! (menu-open))))
+    )
 )
