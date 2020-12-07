@@ -2,7 +2,7 @@
     ;; attach should generally be LOAD not exec 
     ;; because it's more convenient to attach inline
     (attach-message midi (load-file scripts/ot-beat-repeat))
-
+    
     ;; this doesn't actually do anything... unless you plug/unplug stuff
     (attach-message midi-add-device (` print-table (env)))
 
@@ -12,4 +12,15 @@
     ;; TODO: attach by NAME which is more stable
     ;; TODO: do all this in CONFIG. this whole file is really CONFIG
     (add-lens 2 (exec-file midi-lens/octatrack) (` 1 2 3 4 5 6 7 8 9))
+
+
+    ;; CC 16 on channel 16 -> crossfader
+    (attach-message midi (` ? 
+        (& 
+            (= (ch) 16)
+            (= (type) cc) 
+            (= (@ (raw) 2) 16))
+        
+        (tx audio-crossfader (: v (@ (raw) 3)))
+    ))
 )

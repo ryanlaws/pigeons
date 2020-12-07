@@ -13,25 +13,12 @@
     - [ ] Message-mapping
     - [ ] Note/CC matching
     - [ ] Inclusive ranges (thinking ".." for the fn name)
-- [ ] Refactor exec to create child envs
+- [ ] Remove env references from core as much as possible
 - [ ] Collate TODOs from code
-- [ ] Rethink lens modes - they're cheesy
-    - [ ] Conditions + state is more useful
-- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
 - [ ] Refactor everything to use plisp as much as possible
-- [ ] Implement UI
-    - [ ] Visual (keyboard-free) expression editor
-    - [ ] Message "learn" (like MIDI learn)
-- [ ] Add debug mode
 - [ ] Refactor for library usage
     - [ ] Do not reference other modules via globals
     - [ ] Messages and plisp MAY be useful separately (?)
-- [ ] Implement message throttling
-    - [ ] Timers/clocks
-    - [ ] Execution context (like closure env) - may need IDs, etc.
-- [ ] Add engine support
-- [ ] Add norns params read/write support
-    - [ ] This has its own MIDI mappings
 
 # DONE
 - [x] Implement (basic) MIDI output handlers
@@ -59,3 +46,19 @@
     - [x] Input (MIDI from external devices)
     - [x] Output (MIDI to external devices)
 - [x] Convert lenses to plisp
+- [x] Refactor exec to create child envs
+
+# LATER
+- [ ] Implement UI
+    - [ ] Visual (keyboard-free) expression editor
+    - [ ] Message "learn" (like MIDI learn)
+- [ ] Implement message throttling
+    - [ ] Timers/clocks
+    - [ ] Execution context (like closure env) - may need IDs, etc.
+- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
+- [ ] Add engine support
+- [ ] Add debug mode
+- [ ] Rethink lens modes - they're cheesy
+    - [ ] Conditions + state is more useful
+- [ ] Add norns param menu read/write support
+    - [ ] This has its own MIDI mappings

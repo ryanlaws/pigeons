@@ -9,7 +9,7 @@
 - [ ] Persistent display of control values, not just logging
 - [ ] Real sexpr persistence
 - [x] Real sexpr parsing
-- [ ] Mode-level environments
+- [x] Mode-level environments (via forking)
 - [ ] Event recording (technically already possible... sorta)
 - [x] Event filtering (can be done with plisp)
 - [ ] Scheduling (sequencing, delay, throttle, etc.)
