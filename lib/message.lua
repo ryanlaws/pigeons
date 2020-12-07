@@ -63,12 +63,12 @@ m.transmit = function (message_type, msg, origin)
 
     -- it might be good to bring your own env...
     -- for inheritance, and stuff
-    local env = Lisp.make_env(msg)
+    local l = Lisp.fork(msg)
 
     -- something feels off here
     -- I think because we're doing lisp things in the message area
     for i = 1,#handlers do
-        local derp = Lisp.exec(handlers[i], env)
+        local derp = l.exec(handlers[i], l)
     end
 
     m.log(msg)

@@ -163,14 +163,16 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
     -- ...I'll clean it up later. maybe.
 end
 
-_midi.lens_to_midi = function (args, env)
+-- this is getting really janky. needs a lot of love.
+_midi.lens_to_midi = function (args, l)
     -- we need to get an n and v. we don't have to get from env tho.
-    if (type(env.message_type) ~= 'string') then
-        error('malformed lens message - message_type is a '..type(env.message_type)..', not a string')
+    if (type(l.env.message_type) ~= 'string') then
+        print('bad env:')
+        error('malformed lens message - message_type is a '..type(l.env.message_type)..', not a string')
     end
 
     -- we are assuming every message needs an n and v. this just isn't true.
-    local msg_type = env.message_type
+    local msg_type = l.env.message_type
 
     local port_id = args[1]
     local lens_name = args[2]
@@ -214,7 +216,7 @@ _midi.lens_to_midi = function (args, env)
             error('bad n range')
         end
 
-        midi_n = util.clamp(env.n, msg.n.range[1], msg.n.range[2])
+        midi_n = util.clamp(l.env.n, msg.n.range[1], msg.n.range[2])
 
         local offset = ((type(msg.n.offset) == 'number') and msg.n.offset) or 0
 
@@ -223,7 +225,7 @@ _midi.lens_to_midi = function (args, env)
         --end
         midi_n = midi_n + offset
     elseif midi_n == nil then
-        midi_n = env.n
+        midi_n = l.env.n
     end
 
     if type(midi_n) ~= 'number' then
@@ -241,14 +243,14 @@ _midi.lens_to_midi = function (args, env)
         then
             error('bad v range')
         end
-        midi_v = util.clamp(env.v, msg.v.range[1], msg.v.range[2])
+        midi_v = util.clamp(l.env.v, msg.v.range[1], msg.v.range[2])
 
         if type(msg.v.offset) ~= 'number' then
             error('bad v offset (type '..type(msg.v.offset)..')')
         end
         midi_v = midi_v + msg.v.offset
     elseif midi_v == nil then
-        midi_v = env.v
+        midi_v = l.env.v
     end
 
     -- no v found for env or def, use default value
@@ -329,7 +331,7 @@ _midi.init = function ()
     midi.update_devices()
 
     print("MIDI device IDs:")
-    for i, dev in pairs(midi.devices) do
+    for _, dev in pairs(midi.devices) do
         print("ID #"..dev.id..".) "..dev.name
             ..(midi.devices[dev.id] and " OK!" or " BROKEN!"))
         connect_device(dev.id, dev.name)

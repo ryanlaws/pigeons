@@ -1,9 +1,8 @@
 local global_env = {}
-local lisp = {}
 
 local base_lisp_path = '/home/we/dust/code/pigeons/'
 
-lisp.tail = function (t, start)
+local tail = function (t, start)
     start = start or 2
     if type(t) ~= 'table' or #t == 0 then return {} end
 
@@ -14,95 +13,12 @@ lisp.tail = function (t, start)
     return result
 end
 
--- TODO: find a more elegant way to do this.
--- keep in mind we don't want to mutate tables
--- (is that really true? I'm mutating them now lol)
--- something something metatables
-lisp.defglobal = function (name, item)
+local function defglobal (name, item)
+    print('globally [re]defining '..name..' as:'..Utils.table_to_string(item))
     global_env[name] = item
 end
 
--- copying envs could be useful
-lisp.make_env = function (new_env, parent_env)
-    if new_env == nil then
-        new_env = {}
-    elseif type(new_env) ~= 'table' then 
-        error("bad env (type "..type(new_env).." - should be table)") 
-        return nil -- reachable?
-    end
-
-    parent_env = parent_env or global_env
-
-    -- dummy vars everywhere. 
-    -- probably not the right way to use metatables.
-    local env = setmetatable({}, {
-        __index = function(_, k)
-            return (new_env[k] ~= nil and new_env[k]) or parent_env[k]
-        end,
-        __newindex = function(_, k, v)
-            new_env[k] = v
-        end,
-        __parent = parent_env
-    })
-
-    return env
-end
-
--- TODO: return exec() w/o needing env arg
---   it's getting tedious to pass it around EVERYWHERE
---   also, a metatable parental chain of env would make mode/event envs easier
--- should creating an environment give us an exec() as well?
-lisp.exec = function (expr, env) 
-    if type(expr) == 'string' then
-        return expr
-    elseif type(expr) == 'number' then
-        return expr
-    elseif type(expr) == 'boolean' then
-        return expr
-    elseif expr == nil then
-        return expr
-    elseif #expr == 0 then
-        -- Utils.warn("empty or non-sequential expr. BYE!")
-        return expr
-    end
-
-    local head = expr[1]
-    if not head then
-        Utils.warn("bogus head")
-        -- should we error() here? 
-        return
-    end
-
-    if not env then 
-        env = lisp.make_env()
-    end
-
-    local item = env[head]
-    if item == nil then
-        -- no. erroring is a bad idea. for example, clock doesn't have .ch. heh
-        -- error("env does not have '"..head.."'") -- just no.
-        -- Utils.warn("env does not have '"..head.."'") -- very chatty - bad.
-        return nil -- uhhh, what else?
-    elseif type(item) ~= 'function' then -- assuming string/number. what else...?
-        -- for functions I think it's the same... but lazy.
-        return item
-    end
-
-    local args = lisp.tail(expr)
-
-    return item(args, env)
-end
-
--- file stuff
-lisp.load_file = function(filename)
-    return lisp.load_lisp_file(filename)
-end
-
-lisp.exec_file = function(filename, env)
-    return lisp.exec(lisp.load_file(filename), env)
-end
-
-lisp.lisp_to_table = function (sexpr)
+local function expr_to_table (sexpr)
     -- remove line comments
     sexpr = string.gsub(sexpr, ';;[^\r\n]*(\r?\n)', "%1")
 
@@ -128,7 +44,7 @@ lisp.lisp_to_table = function (sexpr)
 
     -- contiguous whitespace to single comma
     sexpr = string.gsub(sexpr, '%s+', ',')
-    
+
     local fn, err = load('return '..sexpr)
     if err then
         error("error parsing sexpr:\n"..err
@@ -138,14 +54,93 @@ lisp.lisp_to_table = function (sexpr)
     return fn()
 end
 
-lisp.load_lisp_file = function (filename)
+local function load_file(filename)
+    print('loading '..filename)
     local file = io.open(base_lisp_path..filename..'.plisp', 'r')
     io.input(file)
     local contents = io.read('*all')
     -- io.close() -- this keeps complaining, I'm just gonna ignore it for now lol
 
-    return lisp.lisp_to_table(contents)
+    print('loaded '..filename)
+    return expr_to_table(contents)
 end
--- end file stuff
 
-return lisp
+local function make_env(env_value_table, parent_env)
+    if env_value_table == nil then
+        env_value_table = {}
+    elseif type(env_value_table) ~= 'table' then 
+        error("bad env (type "..type(env_value_table).." - should be table)") 
+        return nil -- reachable?
+    end
+
+    parent_env = parent_env or global_env
+
+    -- probably not the right way to use metatables.
+    -- would be nice to support e.g. pairs() if available.
+    local env = setmetatable({}, {
+        __index = function(_, k)
+            return (env_value_table[k] ~= nil and env_value_table[k]) or parent_env[k]
+        end,
+        __newindex = function(_, k, v)
+            env_value_table[k] = v
+        end,
+        __parent = parent_env
+    })
+
+    return env
+end
+
+local function make_exec(lisp)
+    -- print('making exec')
+    return function (expr)
+        if type(expr) ~= 'table' or #expr == 0 then
+            return expr
+        end
+
+        local head = expr[1]
+        if not head then
+            error("bogus head")
+        end
+
+        local item = lisp.env[head]
+        if item == nil then
+            return nil -- uhhh, what else?
+        elseif type(item) ~= 'function' then -- assuming string/number. what else...?
+            -- for functions I think it's the same... but lazy.
+            return item
+        end
+
+        local args = tail(expr)
+
+        -- be very careful to get your references right... heh
+        return item(args, lisp)
+    end
+end
+
+-- take an environment and return a full lisp out of it.
+local function make_lisp(env)
+    local function fork(env_value_table)
+        -- print('forking')
+        return make_lisp(make_env(env_value_table, env))
+    end
+
+    local lisp = {
+        env=env,
+        load_file=load_file,
+        expr_to_table=expr_to_table,
+        defglobal=defglobal,
+        fork=fork,
+    }
+
+    lisp.exec = make_exec(lisp)
+
+    lisp.exec_file = function (filename)
+        local contents = load_file(filename)
+        print('executing '..filename)
+        return lisp.exec(contents)
+    end
+
+    return lisp
+end
+
+return make_lisp(global_env)

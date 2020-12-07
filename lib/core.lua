@@ -1,110 +1,110 @@
 local core = {}
 
-core['print-expr'] = function (args, env)
+core['print-expr'] = function (args, l)
     local printable = args[1]
     -- assume we only care about first arg of expression
     -- I need to be able to get the whole env... I know this is gross
     local result
     if printable and #printable > 0 then
-        result = Lisp.exec(printable, env)
+        result = l.exec(printable)
     else
-        result = env
+        result = l.env
     end
     print(Utils.table_to_string(result))
 end
 
-core['print-table'] = function (args, env)
+core['print-table'] = function (args, l)
     print(Utils.table_to_string(args[1]))
 end
 
-core['='] = function (args, env)
-    return Lisp.exec(args[1], env) == Lisp.exec(args[2], env)
+core['='] = function (args, l)
+    return l.exec(args[1]) == l.exec(args[2])
 end
 
-core['>'] = function (args, env)
-    return Lisp.exec(args[1], env) > Lisp.exec(args[2], env)
+core['>'] = function (args, l)
+    return l.exec(args[1]) > l.exec(args[2])
 end
 
-core['<'] = function (args, env)
-    return Lisp.exec(args[1], env) < Lisp.exec(args[2], env)
+core['<'] = function (args, l)
+    return l.exec(args[1]) < l.exec(args[2])
 end
 
-core['>='] = function (args, env)
-    return Lisp.exec(args[1], env) >= Lisp.exec(args[2], env)
+core['>='] = function (args, l)
+    return l.exec(args[1]) >= l.exec(args[2])
 end
 
-core['<='] = function (args, env)
-    return Lisp.exec(args[1], env) <= Lisp.exec(args[2], env)
+core['<='] = function (args, l)
+    return l.exec(args[1]) <= l.exec(args[2])
 end
 
-core['!'] = function (args, env)
-    return not Lisp.exec(args[1], env)
+core['!'] = function (args, l)
+    return not l.exec(args[1])
 end
 
-core['&'] = function (args, env)
+core['&'] = function (args, l)
     local result = true
     for i=1,#args do
-        if not Lisp.exec(args[i], env) then
+        if not l.exec(args[i]) then
             return false
         end
     end
     return result
 end
 
-core['|'] = function (args, env)
+core['|'] = function (args, l)
     local result = false
     for i=1,#args do
-        if Lisp.exec(args[i], env) then
+        if l.exec(args[i]) then
             return true
         end
     end
     return result
 end
 
-core['?'] = function (args, env)
-    local result = Lisp.exec(args[1], env)
+core['?'] = function (args, l)
+    local result = l.exec(args[1])
     if result then
-        return Lisp.exec(args[2], env)
+        return l.exec(args[2])
     else
-        return Lisp.exec(args[3], env)
+        return l.exec(args[3])
     end
 end
 
-core['-'] = function (args, env)
-    local result = Lisp.exec(args[1], env)
+core['-'] = function (args, l)
+    local result = l.exec(args[1])
     for i=2,#args do
-        result = result - Lisp.exec(args[i], env)
+        result = result - l.exec(args[i])
     end
     return result
 end
 
-core['+'] = function (args, env)
-    local result = Lisp.exec(args[1], env)
+core['+'] = function (args, l)
+    local result = l.exec(args[1])
     for i=2,#args do
-        result = result + Lisp.exec(args[i], env)
+        result = result + l.exec(args[i])
     end
     return result
 end
 
-core['/'] = function (args, env)
-    local result = Lisp.exec(args[1], env)
+core['/'] = function (args, l)
+    local result = l.exec(args[1])
     for i=2,#args do
-        result = result / Lisp.exec(args[i], env)
+        result = result / l.exec(args[i])
     end
     return result
 end
 
-core['*'] = function (args, env)
-    local result = Lisp.exec(args[1], env)
+core['*'] = function (args, l)
+    local result = l.exec(args[1])
     for i=2,#args do
-        result = result * Lisp.exec(args[i], env)
+        result = result * l.exec(args[i])
     end
     return result
 end
 
-core['%'] = function (args, env)
-    local num = Lisp.exec(args[1], env)
-    local denom = Lisp.exec(args[2], env)
+core['%'] = function (args, l)
+    local num = l.exec(args[1])
+    local denom = l.exec(args[2])
 
     -- TODO: validate:
     -- - num and denom should be numbers
@@ -115,20 +115,20 @@ end
 
 -- TODO: move to _midi somehow
 -- TODO: use vports to find device
-core['midi'] = function (args, env)
-    local dev_id = Lisp.exec(args[1], env)
+core['midi'] = function (args, l)
+    local dev_id = l.exec(args[1])
     local device = type(dev_id) == 'number' and midi.devices[dev_id] or nil
     if device == nil then
         error("bogus MIDI device ID!")
     end
 
-    device:send(Lisp.exec(args[2], env))
+    device:send(l.exec(args[2]))
 end
 
-core['smush'] = function (args, env)
+core['smush'] = function (args, l)
     local str = ""
     for i=1,#args do
-        local val = Lisp.exec(args[i], env)
+        local val = l.exec(args[i])
         if type(val) == 'boolean' then
             val = val and '(true)' or '(false)'
         end
@@ -137,36 +137,36 @@ core['smush'] = function (args, env)
     return str
 end
 
-core['prop'] = function (args, env)
+core['prop'] = function (args, l)
     local prop = args[1]
     if type(prop) ~= 'string' then return nil end
 
-    local t = Lisp.exec(args[2], env)
+    local t = l.exec(args[2])
     if type(t) ~= 'table' then return nil end
     return t[prop]
 end
 
 -- gonna want defn too, eventually
 -- that sounds like a pain
-core['def'] = function(args, env)
+core['def'] = function(args, l)
     if type(args[1]) ~= 'string' then
         error("def name is not a string, what the heck dude?")
         return nil
     end
 
-    local result = Lisp.exec(args[2], env)
+    local result = l.exec(args[2])
     if result == nil then
         Utils.warn("what's the point of defining "..args[1].." as (nil)?")
     end
 
-    env[args[1]] = result
+    l.env[args[1]] = result
     -- do we care if we're re-defining an existing name?
     -- nah, not yet. REASONS TO CARE NEEDED
 end
 
 -- this is kinda tacky.
 -- we want something that copies the table and redefines in the copy.
-core['def@'] = function(args, env)
+core['def@'] = function(args, l)
     if type(args[1]) ~= 'string' then
         error("def name is not a string, what the heck dude?")
         return nil
@@ -177,35 +177,35 @@ core['def@'] = function(args, env)
         Utils.warn("what's the point of defining "..args[1].."."..args[2].." as (nil)?")
     end
 
-    env[args[1]][args[2]] = Lisp.exec(args[3], env)
+    l.env[args[1]][args[2]] = l.exec(args[3])
 end
 
 -- mayyyybe a bad idea
-core['gdef'] = function(args, env)
+core['gdef'] = function(args, l)
     if type(args[1]) ~= 'string' then
         error("non-string key to ['gdef']")
     elseif type(args[2]) == nil then
         error("nil value to ['gdef']")
     else
         -- totally fine to eval here
-        Lisp.defglobal(args[1], Lisp.exec(args[2], env))
+        l.defglobal(l.exec(args[1]), l.exec(args[2]))
     end
 end
 
-core['do'] = function(args, env)
+core['do'] = function(args, l)
     local result
     for i=1,#args do
-        result = Lisp.exec(args[i], env)
+        result = l.exec(args[i])
     end
     return result
 end
 
-core['pairs-to-table'] = function (args, env)
+core['pairs-to-table'] = function (args, l)
     local t = {}
     for i=1, #args, 2  do
         if i+1 <= #args then
-            local k = Lisp.exec(args[i], env)
-            local v = Lisp.exec(args[i + 1], env)
+            local k = l.exec(args[i])
+            local v = l.exec(args[i + 1])
             if type(k) == 'string' and v ~= nil then
                 t[k] = t[v]
             end
@@ -213,19 +213,19 @@ core['pairs-to-table'] = function (args, env)
     end
 end
 
-core['tx'] = function(args, env)
-    local message_type = Lisp.exec(args[1], env)
-    local msg = Lisp.exec(args[2], env)
+core['tx'] = function(args, l)
+    local message_type = l.exec(args[1])
+    local msg = l.exec(args[2])
     Message.transmit(message_type, msg, "lisp")
 end
 
-core[':'] = function(args, env)
+core[':'] = function(args, l)
     -- print('in pairs with '..#args..' args.')
     local t = {}
     for i=1,#args,2 do
-        local key = Lisp.exec(args[i], env)
+        local key = l.exec(args[i])
         -- print('setting '..key)
-        local value = Lisp.exec(args[i + 1], env)
+        local value = l.exec(args[i + 1])
         t[key] = value
     end
     return t
@@ -261,13 +261,13 @@ core['expr-to-sexpr'] = function(args, env, list)
     return list
 end
 
-core['@'] = function(args, env)
+core['@'] = function(args, l)
     if type(args) ~= 'table' or #args < 2 then
         error('bad args - not table or empty table')
     end
 
-    local table = Lisp.exec(args[1], env)
-    local key = Lisp.exec(args[2], env)
+    local table = l.exec(args[1])
+    local key = l.exec(args[2])
 
     if type(table) ~= 'table' then
         error('.@ arg[1] is not a table, it is a '..type(table))
@@ -283,12 +283,12 @@ core['@'] = function(args, env)
 end
 
 -- I may have implemented this elsewhere... ugh
-core['`'] = function (args, env)
+core['`'] = function (args, l)
     return args
 end
 
 -- having both of these separate is probably only useful w/ currying
-core['of'] = function(args, env)
+core['of'] = function(args, l)
     if type(args) ~= 'table' or #args < 2 then
         error('bad args - not table or empty table')
     end
@@ -309,7 +309,7 @@ core['of'] = function(args, env)
     return table[key]
 end
 
-core['join'] = function(args, env)
+core['join'] = function(args, l)
     if type(args) ~= 'table' then error('bad args') end
     if type(args[1]) ~= 'table' then error('join arg is not a table') end
 
@@ -333,14 +333,14 @@ core['join'] = function(args, env)
             if (last_item == "(") or (item == ")")  then
                 str = str..item
             else
-                str = str..((i ~= i) and glue or '')..item
+                str = str..((i ~= 1) and glue or '')..item
             end
         elseif type(item) == 'number' then
             str = str..glue..item
         elseif type(item) == 'table' then
-            local item_str = Lisp.exec(item, env)
+            local item_str = l.exec(item)
             if item_str == nil then item_str = '(nil)' end
-            str = str..((i ~= i) and glue or '')..item_str
+            str = str..((i ~= 1) and glue or '')..item_str
         else
             error("join doen't know what to do with a "..type(item))
         end
@@ -350,68 +350,35 @@ core['join'] = function(args, env)
     return str
 end
 
-core['exec-file'] = function(args, env)
-    local filename = Lisp.exec(args[1], env)
-    return Lisp.exec_file(filename, env)
+core['exec-file'] = function(args, l)
+    local filename = l.exec(args[1])
+    return l.exec_file(filename)
 end
 
-core['load-file'] = function(args, env)
-    local filename = Lisp.exec(args[1], env)
-    print('loading file '..filename)
-    return Lisp.load_file(filename, env)
+core['load-file'] = function(args, l)
+    local filename = l.exec(args[1])
+    return l.load_file(filename)
 end
 
-core['attach-message'] = function(args, env)
-    local message_type = Lisp.exec(args[1], env)
-    local handler_def = Lisp.exec(args[2], env) -- actually need exec. ugh
+core['attach-message'] = function(args, l)
+    local message_type = l.exec(args[1])
+    local handler_def = l.exec(args[2]) -- actually need exec. ugh
     Message.attach(message_type, handler_def)
 end
 
  -- must happen AFTER midi init
-core['add-lens'] = function(args, env)
-    local port_id = Lisp.exec(args[1], env)
-    local lens_def = Lisp.exec(args[2], env)
-    local lens_channels = args[3] and Lisp.exec(args[3], env)
+core['add-lens'] = function(args, l)
+    local port_id = l.exec(args[1])
+    local lens_def = l.exec(args[2])
+    local lens_channels = args[3] and l.exec(args[3])
     _Midi.add_lens(port_id, lens_def, lens_channels)
 end
 
--- stinky
--- could probably just iterate over all these keys
--- I keep forgetting to add these lol. probably a sign that I should iterate...
-Lisp.defglobal('print-message', core['print-message'])
-Lisp.defglobal('print-expr', core['print-expr'])
-Lisp.defglobal('print-table', core['print-table'])
-Lisp.defglobal('smush', core['smush'])
-Lisp.defglobal('env', core['env'])
-Lisp.defglobal('?', core['?'])
-Lisp.defglobal('=', core['='])
-Lisp.defglobal('>', core['>'])
-Lisp.defglobal('<', core['<'])
-Lisp.defglobal('>=', core['>='])
-Lisp.defglobal('<=', core['<='])
-Lisp.defglobal('&', core['&'])
-Lisp.defglobal('|', core['|'])
-Lisp.defglobal('!', core['!'])
-Lisp.defglobal('-', core['-'])
-Lisp.defglobal('+', core['+'])
-Lisp.defglobal('/', core['/'])
-Lisp.defglobal('*', core['*'])
-Lisp.defglobal('%', core['%'])
-Lisp.defglobal('`', core['`'])
-Lisp.defglobal('@', core['@'])
-Lisp.defglobal('midi', core['midi'])
-Lisp.defglobal('prop', core['prop'])
-Lisp.defglobal('def', core['def'])
-Lisp.defglobal('def@', core['def@'])
-Lisp.defglobal('gdef', core['gdef'])
-Lisp.defglobal('do', core['do'])
-Lisp.defglobal('join', core['join'])
-Lisp.defglobal('tx', core['tx'])
-Lisp.defglobal(':', core[':'])
-Lisp.defglobal('expr-to-sexpr', core['expr-to-sexpr'])
-Lisp.defglobal('exec-file', core['exec-file'])
-Lisp.defglobal('load-file', core['load-file'])
-Lisp.defglobal('attach-message', core['attach-message'])
-Lisp.defglobal('add-lens', core['add-lens'])
+-- actually do the defining
+-- this uses the global Lisp (i.e., the file, not the env)
+for name, def in pairs(core) do
+    print('defining core function '..name)
+    Lisp.defglobal(name, def)
+end
 
 return core
