@@ -13,7 +13,11 @@
     - [ ] Message-mapping
     - [ ] Note/CC matching
     - [ ] Inclusive ranges (thinking ".." for the fn name)
-- [ ] Remove env references from core as much as possible
+- [ ] Remove env references from core as much as possible; used in:
+    - [ ] print-expr
+    - [ ] def
+    - [ ] def@
+    - [ ] expr-to-sexpr
 - [ ] Collate TODOs from code
 - [ ] Refactor everything to use plisp as much as possible
 - [ ] Refactor for library usage
