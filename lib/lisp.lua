@@ -1,7 +1,6 @@
 local global_env = {}
 local lisp = {}
 
-
 local base_lisp_path = '/home/we/dust/code/pigeons/'
 
 lisp.tail = function (t, start)
@@ -22,13 +21,6 @@ end
 lisp.defglobal = function (name, item)
     global_env[name] = item
 end
-
--- also need outputs for:
-    -- MIDI
-    -- synth
-    -- softcut
-    -- crow
-    -- UI
 
 -- copying envs could be useful
 lisp.make_env = function (new_env, parent_env)
