@@ -1,0 +1,14 @@
+{
+    "Lua.diagnostics.globals": [
+        "include",
+        "midi",
+        "util",
+        "screen",
+        "clock",
+        "enc",
+        "key",
+        "init",
+        "cleanup",
+        "redraw"
+    ]
+}
