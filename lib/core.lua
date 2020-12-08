@@ -164,8 +164,41 @@ core['def'] = function(args, l)
     -- nah, not yet. REASONS TO CARE NEEDED
 end
 
+core['defn'] = function(args, l)
+    -- name
+    local name = args[1]
+    if type(name) ~= 'string' then
+        error('defn args[1] (name) is not a string!')
+        return nil
+    end
+
+    -- args
+    local arg_names = args[2]
+    if type(arg_names) == 'table' then
+        for i=1,#arg_names do
+            if type(arg_names[i]) == 'string' then
+                table.insert(arg_names, arg_names[i])
+            else
+                error('defn args[2]['..i..'] (arg name) is not a string!')
+            end
+        end
+    else
+        error('defn args[2] (arg names) is not a table!')
+    end
+
+    local implementation = args[3]
+
+    l.define(name, function(args, l) -- what to do with this l??
+        for i=1,#arg_names do
+            l.define(arg_names[i], args[i])
+        end
+        return l.exec(implementation)
+    end)
+end
+
 -- this is kinda tacky.
 -- we want something that copies the table and redefines in the copy.
+-- yeah this thing is terrible.
 core['def@'] = function(args, l)
     if type(args[1]) ~= 'string' then
         error("def name is not a string, what the heck dude?")
@@ -368,9 +401,15 @@ end
 
  -- must happen AFTER midi init
 core['add-lens'] = function(args, l)
-    local port_id = l.exec(args[1])
-    local lens_def = l.exec(args[2])
-    local lens_channels = args[3] and l.exec(args[3])
+    local lens_l = l.fork()
+    -- TODO: run lens helper functions here
+
+    local port_id = lens_l.exec(args[1])
+    local lens_def = lens_l.exec(args[2])
+    local lens_channels = args[3] and lens_l.exec(args[3])
+
+    -- this adds the result to global lenses
+    -- so we don't need to use this env
     _Midi.add_lens(port_id, lens_def, lens_channels)
 end
 

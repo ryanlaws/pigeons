@@ -140,6 +140,12 @@ local function make_lisp(env)
         return lisp.exec(contents)
     end
 
+    -- is this useful?
+    -- l.env[] is basically the same dealio
+    lisp.define = function (name, value)
+        env[name] = value
+    end
+
     return lisp
 end
 
