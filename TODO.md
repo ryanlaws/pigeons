@@ -55,6 +55,10 @@
 # LATER
 - [ ] Implement UI
     - [ ] Visual (keyboard-free) expression editor
+        - [ ] Note that full expr probably ain't it
+        - [ ] Lean into the mercurial quality of lisp
+        - [ ] DSLs are useful
+        - [ ] Macros may also be useful
     - [ ] Message "learn" (like MIDI learn)
 - [ ] Implement message throttling
     - [ ] Timers/clocks
