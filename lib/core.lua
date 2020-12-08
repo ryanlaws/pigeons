@@ -213,6 +213,27 @@ core['def@'] = function(args, l)
     l.env[args[1]][args[2]] = l.exec(args[3])
 end
 
+-- thanks to rbxbx on the norns study group discord for the name!
+core['swap'] = function(args, l)
+    if type(args[3]) ~= 'table' or #args[3] > 0 then
+        error('swap only works on associative tables!')
+    end
+
+    local tab = args[3]
+
+    -- this is exactly the kind of thing metatables are good at...
+    -- if this needs optimizing, that's probably a good choice
+    local table_copy = {}
+    for k, v in pairs(tab) do
+        table_copy[k] = v
+    end
+
+    local key = l.exec(args[1])
+    local value = l.exec(args[2])
+    table_copy[key] = table_copy[value]
+    return table_copy
+end
+
 -- mayyyybe a bad idea
 core['gdef'] = function(args, l)
     if type(args[1]) ~= 'string' then
