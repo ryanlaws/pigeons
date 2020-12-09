@@ -176,10 +176,8 @@ core['defn'] = function(args, l)
     local arg_names = args[2]
     if type(arg_names) == 'table' then
         for i=1,#arg_names do
-            if type(arg_names[i]) == 'string' then
-                table.insert(arg_names, arg_names[i])
-            else
-                error('defn args[2]['..i..'] (arg name) is not a string!')
+            if type(arg_names[i]) ~= 'string' then
+                error('defn args[2]['..i..'] (arg name) is not a string - it is a '..type(arg_names[i])..'!')
             end
         end
     else
@@ -247,9 +245,9 @@ core['gdef'] = function(args, l)
 end
 
 core['do'] = function(args, l)
-    local result
+    local result = {}
     for i=1,#args do
-        result = l.exec(args[i])
+        table.insert(result, l.exec(args[i]))
     end
     return result
 end
