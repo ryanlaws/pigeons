@@ -1,0 +1,24 @@
+(do
+    (defn cc (n) (: type cc n (n)))
+
+    (defn cc-v (n v) (: type cc n (n) v (v)))
+
+    (defn cc-range (n-low n-high n-offset) 
+        (: type cc 
+            n (: range (do (n-low) (n-high)) 
+                offset (n-offset))))
+
+    (defn cc-toggle (n) 
+        (: type cc 
+            n (n) 
+            v (: range (` 0 1))))
+
+    (defn note (n) (: type note n (n)))
+
+    (defn note-range (n-low n-high n-offset) 
+        (: type note 
+            n (: range (do (n-low) (n-high)) 
+                offset (n-offset))))
+
+    (defn mode (m lens) (swap mode (m) (lens)))
+)
