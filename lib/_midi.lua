@@ -55,8 +55,10 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
             end
 
             if lens[spec.type][spec.n][spec_mode] then
-                error("already got lens["..spec.type
-                    .."]["..spec.n.."], yikes!")
+                print("already got lens["..spec.type.."]["..spec.n..
+                    "]["..(spec_mode or 'default').."], yokes! value:"
+                    ..Utils.table_to_string(
+                        lens[spec.type][spec.n][spec_mode or 'default']))
             end
             --print("associating "..spec.type.." #"..spec.n.." for mode "
             --    ..(spec.mode or "(default)").." with "..msg_type)
@@ -71,8 +73,10 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
                 if lens[spec.type][i + offset][spec_mode] then
                     print("ABOUT TO BREAK trying to associate "
                         ..spec.type.." #"..(i + offset).." with "..msg_type)
-                    error("already got lens["..spec.type
-                        .."]["..(i + offset).."], yikes!")
+                    error("already got lens["..spec.type.."]["..(i + offset)
+                        .."]["..(spec_mode or 'default').."], yucks! value:"
+                        ..Utils.table_to_string(
+                            lens[spec.type][i + offset][spec_mode or 'default']))
                 end
                 lens[spec.type][i + offset][spec_mode] = spec
                 --print("associating "..spec.type.." #"..(i + offset).." with "

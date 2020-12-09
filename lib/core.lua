@@ -187,10 +187,15 @@ core['defn'] = function(args, l)
     local implementation = args[3]
 
     l.define(name, function(args, l) -- what to do with this l??
+        local closure = l.fork()
+        -- print('running '..name..':')
         for i=1,#arg_names do
-            l.define(arg_names[i], args[i])
+            -- print(name..' setting '..arg_names[i]..' to '..Utils.table_to_string(args[i]))
+            closure.define(arg_names[i], args[i])
         end
-        return l.exec(implementation)
+        local result = closure.exec(implementation)
+        -- print('result: '..Utils.table_to_string(result))
+        return result
     end)
 end
 
@@ -213,11 +218,29 @@ end
 
 -- thanks to rbxbx on the norns study group discord for the name!
 core['swap'] = function(args, l)
-    if type(args[3]) ~= 'table' or #args[3] > 0 then
-        error('swap only works on associative tables!')
+    if type(args[3]) ~= 'table' then
+        print('swap only works on tables!')
+        print('swap args: '..Utils.table_to_string(args))
+        error('swap had bad 3rd arg')
     end
 
     local tab = args[3]
+    -- this got unexpectedly gnarly
+    -- everything about this while loop feels wrong
+    -- but how else to resolve the env references
+    -- anyway yeah if you see sad faces look here
+    local bad_news_bears = 0
+    while type(tab) == 'table' and #tab > 0 do
+        -- print('fixing up this table for ya... hope this is not stuck in a loop!')
+        tab = l.exec(tab)
+        if type(tab) ~= 'table' then
+            -- all I got was this lousy t-shirt
+            error('swap got bad table:'..Utils.table_to_string(tab))
+        elseif bad_news_bears > 100 then
+            error('pls to rewrite swap code :( :( :(')
+        end
+        bad_news_bears = bad_news_bears + 1
+    end
 
     -- this is exactly the kind of thing metatables are good at...
     -- if this needs optimizing, that's probably a good choice
@@ -228,7 +251,9 @@ core['swap'] = function(args, l)
 
     local key = l.exec(args[1])
     local value = l.exec(args[2])
-    table_copy[key] = table_copy[value]
+    table_copy[key] = value
+    --print('I did the swap thing for '..key..'='..Utils.table_to_string(value)
+    --    ..' and I got: '..Utils.table_to_string(table_copy))
     return table_copy
 end
 

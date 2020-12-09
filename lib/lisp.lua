@@ -93,7 +93,9 @@ end
 local function make_exec(lisp)
     -- print('making exec')
     return function (expr)
+        -- print('running exec on '..Utils.table_to_string(expr))
         if type(expr) ~= 'table' or #expr == 0 then
+            -- print('returning because expr is not a non-assoc table')
             return expr
         end
 
@@ -104,15 +106,19 @@ local function make_exec(lisp)
 
         local item = lisp.env[head]
         if item == nil then
+            -- print('item '..head..' not found!')
             return nil -- uhhh, what else?
         elseif type(item) ~= 'function' then -- assuming string/number. what else...?
             -- for functions I think it's the same... but lazy.
+            -- print('returning because env['..head..'] is not a function. value:')
+            -- print(Utils.table_to_string(item))
             return item
         end
 
         local args = tail(expr)
 
         -- be very careful to get your references right... heh
+        -- print('executing '..head..' on '..Utils.table_to_string(args))
         return item(args, lisp)
     end
 end
