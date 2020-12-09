@@ -13,7 +13,7 @@ utils.table_to_string = function (table, depth, maxdepth)
         return (table and '(true)') or 'false'
     elseif table == nil then
         return "(nil)"
-    elseif type(table) ~= 'string' then
+    elseif type(table) ~= 'table' then
         return "("..type(table)..")"
     end
 
