@@ -247,7 +247,7 @@ end
 core['do'] = function(args, l)
     local result = {}
     for i=1,#args do
-        table.insert(result, l.exec(args[i]))
+        table.insert(result, #result + 1, l.exec(args[i]))
     end
     return result
 end
