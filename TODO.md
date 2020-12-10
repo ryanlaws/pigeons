@@ -11,8 +11,8 @@
     - [ ] Channel-changing
         - [ ] Do things across multiple channels, like OT tracks
     - [ ] Message-mapping
-    - [ ] Note/CC matching
-    - [ ] Inclusive ranges (thinking ".." for the fn name)
+    - [x] Note/CC matching
+    - [ ] Inclusive ranges (thinking ".." for the fn name), e.g. `(.. 1 4)` ->``(` 1 2 3 4)``
 - [ ] Remove env references from core as much as possible; used in:
     - [ ] print-expr
     - [ ] def
