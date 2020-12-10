@@ -1,18 +1,19 @@
 # TODO
 - [ ] Real Lisp
     - [x] Parse sexprs into AST tables 
-    - [ ] Persist AST tables as sexprs
+    - [ ] Persist AST tables as sexprs #1
 - [ ] Load configuration from file
     - [x] Load .plisp as listener implementation
     - [x] Assign .plisp via config
-    - [ ] Use named ports (e.g. Faderfox/Launchpad) when available
-    - [ ] Use virtual MIDI ports instead of real IDs
+    - [ ] Use named ports (e.g. Faderfox/Launchpad) when available #2
+    - [ ] Use virtual MIDI ports instead of real IDs #3
+    - [ ] Make configuration more robust, play nice w/ Git #6
 - [ ] Convenience functions
-    - [ ] Channel-changing
+    - [ ] Channel-changing #4
         - [ ] Do things across multiple channels, like OT tracks
-    - [ ] Message-mapping
+    - [ ] Message-mapping _(what does this mean?)_
     - [x] Note/CC matching
-    - [ ] Inclusive ranges (thinking ".." for the fn name), e.g. `(.. 1 4)` ->``(` 1 2 3 4)``
+    - [ ] Inclusive ranges (thinking ".." for the fn name), e.g. `(.. 1 4)` ->``(` 1 2 3 4)`` #5
 - [ ] Remove env references from core as much as possible; used in:
     - [ ] print-expr
     - [ ] def
@@ -53,20 +54,20 @@
 - [x] Refactor exec to create child envs
 
 # LATER
-- [ ] Implement UI
+- [ ] Implement UI #7
     - [ ] Visual (keyboard-free) expression editor
         - [ ] Note that full expr probably ain't it
         - [ ] Lean into the mercurial quality of lisp
         - [ ] DSLs are useful
         - [ ] Macros may also be useful
     - [ ] Message "learn" (like MIDI learn)
-- [ ] Implement message throttling
+- [ ] Implement message throttling #9
     - [ ] Timers/clocks
     - [ ] Execution context (like closure env) - may need IDs, etc.
-- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code
+- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code #13
 - [ ] Add engine support
-- [ ] Add debug mode
-- [ ] Rethink lens modes - they're cheesy
+- [ ] Add debug mode #10
+- [ ] Rethink lens modes - they're cheesy #11
     - [ ] Conditions + state is more useful
 - [ ] Add norns param menu read/write support
     - [ ] This has its own MIDI mappings
