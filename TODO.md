@@ -1,19 +1,19 @@
 # TODO
 - [ ] Real Lisp
     - [x] Parse sexprs into AST tables 
-    - [ ] Persist AST tables as sexprs #1
+    - [ ] Persist AST tables as sexprs ryanlaws/pigeons#1
 - [ ] Load configuration from file
     - [x] Load .plisp as listener implementation
     - [x] Assign .plisp via config
-    - [ ] Use named ports (e.g. Faderfox/Launchpad) when available #2
-    - [ ] Use virtual MIDI ports instead of real IDs #3
-    - [ ] Make configuration more robust, play nice w/ Git #6
+    - [ ] Use named ports (e.g. Faderfox/Launchpad) when available ryanlaws/pigeons#2
+    - [ ] Use virtual MIDI ports instead of real IDs ryanlaws/pigeons#3
+    - [ ] Make configuration more robust, play nice w/ Git ryanlaws/pigeons#6
 - [ ] Convenience functions
-    - [ ] Channel-changing #4
+    - [ ] Channel-changing ryanlaws/pigeons#4
         - [ ] Do things across multiple channels, like OT tracks
     - [ ] Message-mapping _(what does this mean?)_
     - [x] Note/CC matching
-    - [ ] Inclusive ranges (thinking ".." for the fn name), e.g. `(.. 1 4)` ->``(` 1 2 3 4)`` #5
+    - [ ] Inclusive ranges (thinking ".." for the fn name), e.g. `(.. 1 4)` ->``(` 1 2 3 4)`` ryanlaws/pigeons#5
 - [ ] Remove env references from core as much as possible; used in:
     - [ ] print-expr
     - [ ] def
@@ -61,13 +61,13 @@
         - [ ] DSLs are useful
         - [ ] Macros may also be useful
     - [ ] Message "learn" (like MIDI learn)
-- [ ] Implement message throttling #9
+- [ ] Implement message throttling ryanlaws/pigeons#9
     - [ ] Timers/clocks
     - [ ] Execution context (like closure env) - may need IDs, etc.
-- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code #13
+- [ ] ("Spike") Investigate norns `sky` lib, see if it can replace some code ryanlaws/pigeons#13
 - [ ] Add engine support
 - [ ] Add debug mode #10
-- [ ] Rethink lens modes - they're cheesy #11
+- [ ] Rethink lens modes - they're cheesy ryanlaws/pigeons#11
     - [ ] Conditions + state is more useful
 - [ ] Add norns param menu read/write support
     - [ ] This has its own MIDI mappings
