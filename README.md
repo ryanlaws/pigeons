@@ -24,6 +24,6 @@ If one configures a synth with knobs and buttons, perhaps one can also code
 with them. Where knobs fall short, tried-and-true text picks up the slack.
 
 ## The dream
-As the byte-mappings dissolve, the words come shortly after. Let's further
+As the byte-mappings dissolve, the words follow quickly behind. Let's further
 erase the boundaries between preparing and jamming, programming and using,
 sequencing and playing by hand.
