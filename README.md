@@ -1,52 +1,29 @@
 # Pigeons
-Pigeons hopes at some point to become a message (i.e. event) handling library
-and accompanying programming tool (keyboard optional). Lisp is the glue.
+- Ancient carriers of messages from disparate sources and destinations
+- Homophone, pidgins, linking languages with simple grammar and vocabulary
+- Airborne rats subsisting on civilization's detritus
 
-## What does it do?
-Right now it logs incoming messages (key/encoder, MIDI) to the screen.
-There are some hard-coded configuration to: 
-- "Lens" an Octatrack's input (more on that later)
-- Display a menu
+## Lensing
+MIDI mapping is an all but necessary evil of music hardware. The lenses of
+pigeons are descriptive names for parameters. Instead of referencing
+implementation charts and awkwardly dialing in 7-bit values, let's take the
+friendly names and leave the rest.
 
-As it stabilizes and matures, it might be able to:
-- Route/translate/process MIDI messages, with programmatic logic
-- Send and receive CV with crow
-- Sequence stuff
-- Build message routing layers for norns apps 
+Where the names align is common understanding. A filter cutoff is a filter
+cutoff by any other CC number. 
 
-## OK, what can I use it for right now?
-It's a MIDI monitor! And with lensing, the monitoring is actually useful
-instead of a big stream of meaningless numbers.
+As long as we can forget byte identifiers, why not forget protocol? MIDI is
+only an implementation detail. Where appropriate, OSC and CV can be, too.
 
-If you want to get your hands dirty and mess with the code, you can actually
-use it to do some basic MIDI tasks right now with the Lisp as it is. However,
-none of this is documented so you'll have to fumble your way through with the
-meager examples and this source code. Hopefully that is coming soon. In the
-mean time, good luck, and don't be shy about reporting issues!
+## Lisp
+Lisp is sometimes described as "code as configuration".
 
-## What is lensing?
-Well, in the larger community, it's a functional programming concept. I
-probably misunderstood what it's actually supposed to be, but I liked the
-idea as I interpreted it. Anyway, my interpretation is that you have a sort
-of two-way converter or translator. 
+What is a patch but the configuration of a synthesis system?
 
-On one side of the conversion, you have raw MIDI messages that by themselves
-mean almost nothing: your notes, your CCs, your program changes, etc. On the
-other side, you have a specification for these messages that a device speaks
-and understands, and specifically what they mean to that device. You know,
-the stuff that used to appear in the back of the manual from some point in
-the 1980s to some point in the 2010s, and still does sometimes.
+If one configures a synth with knobs and buttons, perhaps one can also code
+with them. Where knobs fall short, tried-and-true text picks up the slack.
 
-So what does this do for you? Well, in the case of the Octatrack, instead of
-saying "CC #48", we can just say "crossfader". In theory, this makes
-scripting (and logging) more intuitive because you can call parameters in a
-more meaningful way instead of needing a cheat sheet to look up the numbers.
-
-At the moment, this is implemented for the MIDI input (which should be the
-harder half, I think) but not for the MIDI output.
-
-## Why Lisp?
-Lisp's syntax is minimal. In theory, this means expressions can be written
-and modified without text input.
-
-In practice, who knows? MIDI learn will probably help.
+## The dream
+As the byte-mappings dissolve, the words come shortly after. Let's further
+erase the boundaries between preparing and jamming, programming and using,
+sequencing and playing by hand.
