@@ -249,7 +249,10 @@ _midi.lens_to_midi = function (args, l)
         end
         midi_v = util.clamp(l.env.v, msg.v.range[1], msg.v.range[2])
 
-        if type(msg.v.offset) ~= 'number' then
+        if not msg.v.offset then
+            msg.v.offset = 0
+        elseif type(msg.v.offset) ~= 'number' then
+            print(Utils.table_to_string(msg))
             error('bad v offset (type '..type(msg.v.offset)..')')
         end
         midi_v = midi_v + msg.v.offset
