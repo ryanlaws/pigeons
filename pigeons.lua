@@ -21,6 +21,7 @@ local redraw_clock_id
 function init()
     _Midi.init()
     -- where the magic happens
+    Lisp.exec_file('app/lens-dsl')
     Lisp.exec_file('app/main')
     Lisp.exec_file('config')
 
