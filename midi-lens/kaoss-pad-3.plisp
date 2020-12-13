@@ -2,6 +2,10 @@
     long-name Korg_Kaoss_Pad_3
     short-name KP3
 
+    config (: 
+        default-channel 1
+    )
+
     messages (:
         touchpad-x (cc 12)
         touchpad-y (cc 13)
@@ -9,12 +13,11 @@
         touchpad-toggle (cc-toggle 92)
         hold (cc-toggle 92)
 
-        level (cc 83)
-        depth (cc 83)
+        level (cc 93)
+        depth (cc 94)
 
         trig-audio-track (note-range 1 4 35)
 
-        ;; I don't think program-change is implemented yet
-        program (program-change (v))
+        program (pc)
     )
 )
