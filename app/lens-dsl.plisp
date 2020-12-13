@@ -20,5 +20,12 @@
             n (: range (do (n-low) (n-high)) 
                 offset (n-offset))))
 
+    (defn pc () 
+        (: type program_change))
+
+    (defn pc-n (n) 
+        (: type program_change 
+            n (n)))
+
     (defn mode (m lens) (swap mode (m) (lens)))
 )

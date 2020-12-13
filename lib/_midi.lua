@@ -82,7 +82,8 @@ _midi.add_lens = function(port_id, lens_def, lens_channels)
                 --print("associating "..spec.type.." #"..(i + offset).." with "
                 --    ..msg_type.." for mode "..(spec.mode or "(default)"))
             end
-        else
+        -- so cheesy; sorry
+        elseif spec.type ~= 'program_change' then
             print("your spec doesn't have an .n, bud")
             print(Utils.table_to_string(spec))
             error('busted spec')
@@ -233,7 +234,7 @@ _midi.lens_to_midi = function (args, l)
     end
 
     if type(midi_n) ~= 'number' then
-        error('could not get a decent n value')
+        error('could not get a decent n value (got a '..type(midi_n)..')')
     end
 
     midi_n = util.clamp(math.ceil(midi_n), 0, 127)
@@ -263,11 +264,16 @@ _midi.lens_to_midi = function (args, l)
     -- no v found for env or def, use default value
     midi_v = midi_v or lens.config['default-v']
 
-    if type(midi_v) ~= 'number' then
+    -- again with the cheesy hard coded type
+    if type(midi_v) ~= 'number' and midi_type ~= 'program_change' then
         error('could not get a decent v value')
     end
 
-    midi_v = util.clamp(math.ceil(midi_v), 0, 127)
+    if midi_type == 'program_change' then
+        midi_v = nil
+    else
+        midi_v = util.clamp(math.ceil(midi_v or 0), 0, 127)
+    end
 
     local device = type(port_id) == 'number' and midi.devices[port_id] or nil
     if device == nil then 
@@ -282,6 +288,7 @@ _midi.lens_to_midi = function (args, l)
     local channel = lens.config['default-channel']
 
     -- print('sending '..midi_type..' on device#'..port_id..' channel '..channel..': '..midi_n..', '..midi_v)
+    -- print(midi_type..' ch'..(channel or 'nil')..' '..(midi_n or 'nil')..' '..(midi_v or 'nil'))
     device[midi_type](device, midi_n, midi_v, channel)
 
     -- TODO: implement non-channeled message types
