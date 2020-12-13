@@ -32,7 +32,25 @@
 
     ;; Encoder 3 will select a program
     ;; Probably not in any sort of useful way, though, lol
+
+    ;; Global define, so it doesn't get thrown in the garbage along with the event environment
+    ;; (And no, that's not a great design - there's an abstraction missing here for sure!)
+    ;; Sticking with 0-indexing here just because that makes modulo math easier
+    (gdef program-index 0)
+    (gdef number-words (` one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen))
     (attach-message enc (` ? 
         (= (n) 3)
-        (tx program (: n (+ 3 (v))))))
+        (do
+            (print-expr (smush [ (program-index) ] + [ (v) ] =))
+            ;; This is where a persistent closure for program-index would be great
+            (gdef program-index 
+                (% (+ (program-index) (v)) 17) 
+            )
+            (print-expr (smush (program-index) ,a.k.a. (@ (number-words) (+ (program-index) 1))))
+            (tx program 
+                (: n (+ (program-index) 1)) ;; 1 just seemed more reasonable than 0 lol
+            )
+        )
+    ))
+    (print-expr (program-index))
 )
